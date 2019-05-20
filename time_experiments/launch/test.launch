@@ -9,8 +9,11 @@
 
 
   <!-- Run the costmap node -->
-  <node name="pathsim" pkg="time_experiments" type="pathsim" output="screen" >
+  <node name="path_server" pkg="time_experiments" type="path_server" output="screen" >
     <rosparam file="$(find time_experiments)/cfg/costmap_example.yaml" command="load" ns="costmap" />
   </node>
+
+  <node name="time_server" pkg="time_experiments" type="time_server" output="screen" />
+  
 
 </launch>

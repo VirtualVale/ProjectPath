@@ -62,6 +62,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate services in the 'srv' folder
 add_service_files(FILES
   pathsim.srv
+  timesim.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -233,7 +234,7 @@ target_link_libraries(timesim
 
 
 add_executable(path_server
-  src/path_service/path_server.cpp
+  src/server/path_server.cpp
 )
 add_dependencies(path_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(path_server
@@ -245,5 +246,13 @@ add_executable(path_client
 )
 add_dependencies(path_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(path_client
+  ${catkin_LIBRARIES}
+)
+
+add_executable(time_server
+  src/server/time_server.cpp
+)
+add_dependencies(time_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(time_server
   ${catkin_LIBRARIES}
 )

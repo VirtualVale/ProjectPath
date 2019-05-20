@@ -33,11 +33,11 @@ bool simulatePath(time_experiments::pathsim::Request &req, time_experiments::pat
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "pathsim");
+    ros::init(argc, argv, "pathsim_s");
     ros::NodeHandle n;
 
     ros::ServiceServer service = n.advertiseService("pathsim", simulatePath);
-    ROS_INFO("Ready to add two ints.");
+    ROS_INFO("Ready to simulate a path.");
 
     ros::spin();
 
