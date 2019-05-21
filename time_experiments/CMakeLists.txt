@@ -53,16 +53,16 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+   FILES
+   CollisionBool.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(FILES
   pathsim.srv
   timesim.srv
+  collisionsim.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -254,5 +254,13 @@ add_executable(time_server
 )
 add_dependencies(time_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(time_server
+  ${catkin_LIBRARIES}
+)
+
+add_executable(collision_server
+  src/server/collision_server.cpp
+)
+add_dependencies(collision_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(collision_server
   ${catkin_LIBRARIES}
 )

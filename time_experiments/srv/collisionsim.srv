@@ -1,0 +1,4 @@
+nav_msgs/Path superior
+nav_msgs/Path inferior
+---
+time_experiments/CollisionBool collision 
