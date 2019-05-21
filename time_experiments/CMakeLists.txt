@@ -264,3 +264,19 @@ add_dependencies(collision_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_E
 target_link_libraries(collision_server
   ${catkin_LIBRARIES}
 )
+
+add_executable(path_test
+  src/tests/path_test.cpp
+)
+add_dependencies(path_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(path_test
+  ${catkin_LIBRARIES}
+)
+
+add_executable(time_test
+  src/tests/time_test.cpp
+)
+add_dependencies(time_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(time_test
+  ${catkin_LIBRARIES}
+)

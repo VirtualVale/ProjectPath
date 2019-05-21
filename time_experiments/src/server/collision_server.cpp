@@ -36,3 +36,5 @@ int main(int argc, char **argv)
     ros::spin();
     return 0;
 }
+
+//TODO functions checkPath_geometric, checkPath_chronologic
