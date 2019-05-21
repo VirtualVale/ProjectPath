@@ -53,10 +53,9 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-   FILES
-   CollisionBool.msg
-)
+#add_message_files(
+#   FILES
+#)
 
 ## Generate services in the 'srv' folder
 add_service_files(FILES
@@ -278,5 +277,13 @@ add_executable(time_test
 )
 add_dependencies(time_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(time_test
+  ${catkin_LIBRARIES}
+)
+
+add_executable(collision_test
+  src/tests/collision_test.cpp
+)
+add_dependencies(collision_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(collision_test
   ${catkin_LIBRARIES}
 )
