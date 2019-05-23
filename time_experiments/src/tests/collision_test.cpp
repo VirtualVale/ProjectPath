@@ -46,13 +46,13 @@ int main(int argc, char **argv)
     nav_msgs::Path path2;
 
     psrv.request.start.header.stamp = ros::Time::now();
-    psrv.request.start.pose.position.x = 6.0;
+    psrv.request.start.pose.position.x = -4.0;
     psrv.request.start.pose.position.y = 4.0;
     psrv.request.start.pose.orientation.w = 1.0;
 
 
     psrv.request.goal.header.stamp = ros::Time::now();
-    psrv.request.goal.pose.position.x = -4.0;
+    psrv.request.goal.pose.position.x = 6.0;
     psrv.request.goal.pose.position.y = 4.0;
     psrv.request.goal.pose.orientation.w = 1.0;
 
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     }
 
     tsrv.request.original_path = path1;
-    tsrv.request.average_velocity = 2.0;
+    tsrv.request.average_velocity = 0.22;
 
     if(tclient.call(tsrv)){
         path1 = tsrv.response.timesim_path;
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     }
 
     tsrv.request.original_path = path2;
-    tsrv.request.average_velocity = 1.0;
+    tsrv.request.average_velocity = 0.22;
 
     if(tclient.call(tsrv)){
         path2 = tsrv.response.timesim_path;
@@ -89,6 +89,7 @@ int main(int argc, char **argv)
     csrv.request.inferior = path2;
 
     if(cclient.call(csrv)){
+        ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
         ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
     } else {
         ROS_INFO("Paths do not collide!");
