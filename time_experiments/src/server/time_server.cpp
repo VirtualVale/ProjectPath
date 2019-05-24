@@ -16,9 +16,8 @@ bool simulateTime(time_experiments::timesim::Request &req, time_experiments::tim
             double travel_time = euclideanDistance/ req.average_velocity; //TODO deny zero as input for average velocity
     
             req.original_path.poses[i+1].header.stamp = req.original_path.poses[i].header.stamp + ros::Duration(travel_time);
-                if(i==0 || i==1 /*req.original_path.poses.size()-2*/){
-                    ROS_INFO("time: [%i]", req.original_path.poses[i+1].header.stamp.sec);
-                    ROS_INFO("distance: [%f]", euclideanDistance);
+                if(i==0 /*req.original_path.poses.size()-2*/){
+                    ROS_INFO("start time: [%i] sec [%i] nsec", req.original_path.poses[0].header.stamp.sec, req.original_path.poses[0].header.stamp.nsec);
                 }
             }
             trigger = true;

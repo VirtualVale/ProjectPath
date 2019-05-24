@@ -45,13 +45,11 @@ int main(int argc, char **argv)
     //Creating a second path
     nav_msgs::Path path2;
 
-    psrv.request.start.header.stamp = ros::Time::now();
+
     psrv.request.start.pose.position.x = -4.0;
     psrv.request.start.pose.position.y = 4.0;
     psrv.request.start.pose.orientation.w = 1.0;
 
-
-    psrv.request.goal.header.stamp = ros::Time::now();
     psrv.request.goal.pose.position.x = 6.0;
     psrv.request.goal.pose.position.y = 4.0;
     psrv.request.goal.pose.orientation.w = 1.0;
@@ -63,23 +61,31 @@ int main(int argc, char **argv)
         ROS_INFO("Pathplanning 2 failed!");
     }
 
-    tsrv.request.original_path = path1;
-    tsrv.request.average_velocity = 0.22;
+    ros::Time startTime1 (100, 0);
+    path1.poses[0].header.stamp = startTime1;
 
+    tsrv.request.original_path = path1;
+    tsrv.request.average_velocity = 0.022;
+
+    
     if(tclient.call(tsrv)){
         path1 = tsrv.response.timesim_path;
-        ROS_INFO("Path (1) last time: %i", tsrv.response.timesim_path.poses[4].header.stamp.sec);
+        
+        ROS_INFO("Path (1) last time: %i", tsrv.response.timesim_path.poses[tsrv.response.timesim_path.poses.size()-1].header.stamp.sec);
     } else {
       ROS_INFO("Timestamping 1 failed!");
       return 1;
     }
 
+
+    path2.poses[0].header.stamp = startTime1;
+
     tsrv.request.original_path = path2;
-    tsrv.request.average_velocity = 0.22;
+    tsrv.request.average_velocity = 0.022;
 
     if(tclient.call(tsrv)){
         path2 = tsrv.response.timesim_path;
-        ROS_INFO("Path (2) last time: %i", tsrv.response.timesim_path.poses[4].header.stamp.sec);
+        ROS_INFO("Path (2) last time: %i", tsrv.response.timesim_path.poses[tsrv.response.timesim_path.poses.size()-1].header.stamp.sec);
     } else {
       ROS_INFO("Timestamping 2 failed!");
       return 1;

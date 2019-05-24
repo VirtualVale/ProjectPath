@@ -23,7 +23,7 @@ bool simulatePath(time_experiments::pathsim::Request &req, time_experiments::pat
     navfn.makePlan(req.start, req.goal, plan);
 
     res.path.poses = plan;
-    res.path.header.stamp = ros::Time::now();
+    //res.path.header.stamp = ros::Time::now();
     res.path.header.frame_id = "map";
     
     ROS_INFO("plan size: %d", (int) res.path.poses.size());
