@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     time_experiments::timesim tsrv;
 
     tsrv.request.original_path = srv.response.path;
-    tsrv.request.average_velocity = 0.00000000001;
+    tsrv.request.average_velocity = 0.5;
 
     if(time_client.call(tsrv)){
       ROS_INFO("success\n       Timestamped path is published on the Timesim topic.");

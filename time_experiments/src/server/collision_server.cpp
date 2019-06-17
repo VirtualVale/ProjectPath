@@ -56,8 +56,8 @@ int checkPath_geometric(nav_msgs::Path superior, nav_msgs::Path inferior, int po
         for(int j=0; j<superior.poses.size();j++){
 
             double euclideanDistance = sqrt(pow((inferior.poses[i].pose.position.x-superior.poses[j].pose.position.x),2)+pow((inferior.poses[i].pose.position.y-superior.poses[j].pose.position.y),2));
-            
-            if(euclideanDistance<0.1){
+
+            if(euclideanDistance<0.069){ //Distance is Radius of a burger
                 ROS_INFO("Geometrical collision detected.");
                 ROS_INFO("Pose %i on Path1.", j);
                 ROS_INFO("Pose %i on Path2.", i);
@@ -72,18 +72,22 @@ int checkPath_geometric(nav_msgs::Path superior, nav_msgs::Path inferior, int po
 
 //chronological comparison of poses 
 bool checkPath_chronologic(int collisionPose, nav_msgs::Path superior, nav_msgs::Path inferior){
- 
-    int timeBtwPoses = inferior.poses[collisionPose].header.stamp.sec - superior.poses[collisionPose].header.stamp.sec; 
     
-    if(timeBtwPoses > 1){
+    double timeBtwPoses = fabs(inferior.poses[collisionPose].header.stamp.toSec() - superior.poses[collisionPose].header.stamp.toSec()); 
+    
+    ROS_INFO("Path 1 time: %f", inferior.poses[collisionPose].header.stamp.toSec());
+    ROS_INFO("Path 2 time: %f", superior.poses[collisionPose].header.stamp.toSec());
+    ROS_INFO("timeBtwPoses: %f", timeBtwPoses);
+
+    if(timeBtwPoses > 0.627){
         ROS_INFO("Duration btw Poses is enough.Go!");
-        ROS_INFO("%i seconds between the Poses.", timeBtwPoses);
+        ROS_INFO("%f seconds between the Poses.", timeBtwPoses);
         return false;
     } else {
         ROS_INFO("Chronological collision detected.");
-        ROS_INFO("Time %i on Path1.", superior.poses[collisionPose].header.stamp.sec);
-        ROS_INFO("Time %i on Path2.", inferior.poses[collisionPose].header.stamp.sec);
-        ROS_INFO("%i seconds between the Poses.", timeBtwPoses);
+        ROS_INFO("Time %f on Path1.", superior.poses[collisionPose].header.stamp.toSec());
+        ROS_INFO("Time %f on Path2.", inferior.poses[collisionPose].header.stamp.toSec());
+        ROS_INFO("%f seconds between the Poses.", timeBtwPoses);
         return true;
     }
     

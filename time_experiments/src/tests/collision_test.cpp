@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     path1.poses[0].header.stamp = startTime1;
 
     tsrv.request.original_path = path1;
-    tsrv.request.average_velocity = 0.022;
+    tsrv.request.average_velocity = 0.23;
 
     
     if(tclient.call(tsrv)){
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
     path2.poses[0].header.stamp = startTime1;
 
     tsrv.request.original_path = path2;
-    tsrv.request.average_velocity = 0.022;
+    tsrv.request.average_velocity = 0.22;
 
     if(tclient.call(tsrv)){
         path2 = tsrv.response.timesim_path;
