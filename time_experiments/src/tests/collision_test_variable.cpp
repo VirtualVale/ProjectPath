@@ -25,14 +25,14 @@ int main(int argc, char **argv)
 
     psrv.request.start.header.frame_id = "map";
     psrv.request.start.header.stamp = ros::Time::now();
-    psrv.request.start.pose.position.x = -2.0;
-    psrv.request.start.pose.position.y = 1.0;
+    psrv.request.start.pose.position.x = atoi(argv[1]);
+    psrv.request.start.pose.position.y = atoi(argv[2]);
     psrv.request.start.pose.orientation.w = 1.0;
 
     psrv.request.goal.header.frame_id = "map";
     psrv.request.goal.header.stamp = ros::Time::now();
-    psrv.request.goal.pose.position.x = 6.0;
-    psrv.request.goal.pose.position.y = -5.0;
+    psrv.request.goal.pose.position.x = atoi(argv[3]);
+    psrv.request.goal.pose.position.y = atoi(argv[4]);
     psrv.request.goal.pose.orientation.w = 1.0;
 
     if(pclient.call(psrv)){
@@ -46,12 +46,12 @@ int main(int argc, char **argv)
     nav_msgs::Path path2;
 
 
-    psrv.request.start.pose.position.x = -4.0;
-    psrv.request.start.pose.position.y = 4.0;
+    psrv.request.start.pose.position.x = atoi(argv[5]);
+    psrv.request.start.pose.position.y = atoi(argv[6]);
     psrv.request.start.pose.orientation.w = 1.0;
 
-    psrv.request.goal.pose.position.x = 6.0;
-    psrv.request.goal.pose.position.y = 4.0;
+    psrv.request.goal.pose.position.x = atoi(argv[7]);
+    psrv.request.goal.pose.position.y = atoi(argv[8]);
     psrv.request.goal.pose.orientation.w = 1.0;
 
     if(pclient.call(psrv)){
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     path1.poses[0].header.stamp = startTime1;
 
     tsrv.request.original_path = path1;
-    tsrv.request.average_velocity = 0.23;
+    tsrv.request.average_velocity = atoi(argv[9]);
 
     
     if(tclient.call(tsrv)){
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
     path2.poses[0].header.stamp = startTime1;
 
     tsrv.request.original_path = path2;
-    tsrv.request.average_velocity = 0.22;
+    tsrv.request.average_velocity = atoi(argv[10]);
 
     if(tclient.call(tsrv)){
         path2 = tsrv.response.timesim_path;
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
         ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
     } else {
         ROS_INFO("Paths do not collide!");
-        return 1;
+        //return 1;
     }
 
     ros::Publisher path_pub = n.advertise<nav_msgs::Path>("path", 1000);

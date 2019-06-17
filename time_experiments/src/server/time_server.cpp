@@ -14,9 +14,9 @@ bool simulateTime(time_experiments::timesim::Request &req, time_experiments::tim
             //first the distance between the current poses
             double euclideanDistance = sqrt(pow((req.original_path.poses[i].pose.position.x-req.original_path.poses[i+1].pose.position.x),2)+pow((req.original_path.poses[i].pose.position.y-req.original_path.poses[i+1].pose.position.y),2));
             //second the time for the distance to travel 
-            double travel_time = euclideanDistance/ req.average_velocity; //TODO deny zero as input for average velocity
+            float travel_time = euclideanDistance/ req.average_velocity; //TODO deny zero as input for average velocity
             //ROS_INFO("pose [%i], distance to %i, euclideanDistance [%f], traveltime [%f]", i, i-1, euclideanDistance, travel_time);
-            req.original_path.poses[i+1].header.stamp = req.original_path.poses[i].header.stamp + ros::Duration(travel_time);
+            req.original_path.poses[i+1].header.stamp = req.original_path.poses[i].header.stamp + ros::Duration((double) travel_time);
                 if(i==0 /*req.original_path.poses.size()-2*/){
                     ROS_INFO("start time: [%i] sec [%i] nsec", req.original_path.poses[0].header.stamp.sec, req.original_path.poses[0].header.stamp.nsec);
                 }

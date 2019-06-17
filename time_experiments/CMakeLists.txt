@@ -280,10 +280,18 @@ target_link_libraries(time_test
   ${catkin_LIBRARIES}
 )
 
-add_executable(collision_test
-  src/tests/collision_test.cpp
+add_executable(collision_test_variable
+  src/tests/collision_test_variable.cpp
 )
-add_dependencies(collision_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(collision_test
+add_dependencies(collision_test_variable ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(collision_test_variable
+  ${catkin_LIBRARIES}
+)
+
+add_executable(collision_test_standard
+  src/tests/collision_test_standard.cpp
+)
+add_dependencies(collision_test_standard ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(collision_test_standard
   ${catkin_LIBRARIES}
 )
