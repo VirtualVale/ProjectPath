@@ -13,12 +13,13 @@ int main(int argc, char **argv)
       Parameter [1] Number of positions
                 [2] x range between every position
                 [3] y range between every position
-                [4] average velocity
+                [4] average velocity - Vorkomma
+                [5] average velocity - nachkomma
     */
 
     //Verification of the parameters
-    if(isdigit(*argv[1]) || isdigit(atoi(argv[2])) || isdigit(atoi(argv[3])) || isspace(atoi(argv[4]))){
-        ROS_INFO("CHECK THE PARAMETERS\n[1] Number of positions\n[2] x range between every position\n[3] y range between every position\n[4] average velocity");
+    if(!isdigit(*argv[1]) || !isdigit(*argv[2]) || !isdigit(*argv[3]) || !isdigit(*argv[4]) || !isdigit(*argv[5]) ){
+        ROS_INFO("CHECK THE PARAMETERS\n[1] Number of positions\n[2] x range between every position\n[3] y range between every position\n[4] average velocity - before decimal point\n[5] average velocity - after decimal point");
         return 1;
     }
 
@@ -40,7 +41,7 @@ int main(int argc, char **argv)
         pose_variable.pose.orientation.w = 1;
         path_fix.poses.push_back(pose_variable);
 
-        ROS_INFO("Position [%i] at x: [%.2f] added.", i, pose_variable.pose.position.x);
+        //ROS_INFO("Position [%i] at x: [%.2f] added.", i, pose_variable.pose.position.x);
     }
 
     ROS_INFO("Path size: %lu", path_fix.poses.size());
@@ -49,9 +50,10 @@ int main(int argc, char **argv)
     time_experiments::timesim tsrv;
 
     tsrv.request.original_path = path_fix;
-    tsrv.request.average_velocity = atof(argv[4]);
+    tsrv.request.average_velocity = atoi(argv[4]) + (0.1*atoi(argv[5]));
 
     if(time_client.call(tsrv)){
+      ROS_INFO("Start time: %.2f, end time: %.2f, average traveltime: %.2f", tsrv.response.timesim_path.poses.front().header.stamp.toSec(), tsrv.response.timesim_path.poses.back().header.stamp.toSec(),(tsrv.response.timesim_path.poses.back().header.stamp.toSec() - tsrv.response.timesim_path.poses.front().header.stamp.toSec()) / tsrv.response.timesim_path.poses.size()); 
       ROS_INFO("success\n       Timestamped path is published on the Timesim topic.");
     } else {
       ROS_INFO("Failed");
