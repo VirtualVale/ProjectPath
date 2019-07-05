@@ -303,3 +303,11 @@ add_dependencies(fixed_time_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 target_link_libraries(fixed_time_test
   ${catkin_LIBRARIES}
 )
+
+add_executable(fixed_collision_test
+  src/tests/fixed_collision_test.cpp
+)
+add_dependencies(fixed_collision_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(fixed_collision_test
+  ${catkin_LIBRARIES}
+)
