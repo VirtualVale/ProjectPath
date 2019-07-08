@@ -11,10 +11,15 @@ int pose_collision = -1;
 //
 bool collision_check(time_experiments::collisionsim::Request &req, time_experiments::collisionsim::Response &res){
 //TODO Check input
+    pose_collision = -1;
+
     if(distance_check(req.superior, req.inferior)){
-        res.collision = inferior.poses[pose_collision];
+        res.collision = req.inferior.poses[pose_collision];
+        return true;
     }
     res.collision.header.seq = pose_collision;
+    ROS_INFO("No Collision.");
+    return true;
 }
 
 int main(int argc, char **argv)
@@ -22,7 +27,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "collisionsim_s");
     ros::NodeHandle n;
 
-    ros::ServiceServer service = n.advertiseService("collisionsim", simulateCollision);
+    ros::ServiceServer service = n.advertiseService("collisionsim", collision_check);
     ROS_INFO("Ready to check for collisions.");
 
     ros::spin();
@@ -32,11 +37,11 @@ int main(int argc, char **argv)
 //check if the distance between the single poses of each path is big enough to allow the way for both robots
 bool distance_check(nav_msgs::Path path_sup, nav_msgs::Path path_inf){
 
-    for(int i=poseID; i<inferior.poses.size();i++){  
-        for(int j=0; j<superior.poses.size();j++){
-            double distance = euclideanDistance(inferior.poses[i], superior.poses[j]);
+    for(int i=0; i<path_inf.poses.size();i++){  
+        for(int j=0; j<path_sup.poses.size();j++){
+            double distance = euclideanDistance(path_inf.poses[i], path_sup.poses[j]);
             if(distance < 0.096){
-                if(time_check(superior.poses[j],inferior.poses[i])){
+                if(time_check(path_sup.poses[j],path_inf.poses[i])){
                     pose_collision = i;
                     return true;
                 }
@@ -49,9 +54,10 @@ bool distance_check(nav_msgs::Path path_sup, nav_msgs::Path path_inf){
 
 bool time_check(geometry_msgs::PoseStamped pose_sup, geometry_msgs::PoseStamped pose_inf){
 
-    double temporal_distance = fabs(inferior.poses[collisionPose].header.stamp.toSec() - superior.poses[collisionPose].header.stamp.toSec());
+    double temporal_distance = fabs(pose_inf.header.stamp.toSec() - pose_sup.header.stamp.toSec());
     ROS_INFO("%f seconds.nsecs between the Poses.", temporal_distance);
-    if(temporal_distance > 0.627)return true;
+    
+    if(temporal_distance < 0.627)return true;
     return false;
 }
 

@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     path1.poses[0].header.stamp = startTime1;
 
     tsrv.request.original_path = path1;
-    tsrv.request.average_velocity = atoi(argv[9]);
+    tsrv.request.average_velocity = atoi(argv[9]) + (0.1*atoi(argv[10]));
 
     
     if(tclient.call(tsrv)){
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
     path2.poses[0].header.stamp = startTime1;
 
     tsrv.request.original_path = path2;
-    tsrv.request.average_velocity = atoi(argv[10]);
+    tsrv.request.average_velocity = atoi(argv[11]) + (0.1*atoi(argv[12]));
 
     if(tclient.call(tsrv)){
         path2 = tsrv.response.timesim_path;
@@ -95,13 +95,19 @@ int main(int argc, char **argv)
     csrv.request.inferior = path2;
 
     if(cclient.call(csrv)){
-        ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
-        ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
+        if(csrv.response.collision.header.seq == -1 ){
+            ROS_INFO("Seq.nr. : %i", csrv.response.collision.header.seq);
+            ROS_INFO("No Collision");
+        } else {
+            ROS_INFO("Seq.nr. : %i", csrv.response.collision.header.seq);
+            ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
+            ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
+        }
+
     } else {
-        ROS_INFO("Paths do not collide!");
+        ROS_INFO("Collisioncheck failed!");
         //return 1;
     }
-
     ros::Publisher path_pub = n.advertise<nav_msgs::Path>("path", 1000);
     ros::Publisher path2_pub = n.advertise<nav_msgs::Path>("path2", 1000);
     ros::Publisher collision_pub = n.advertise<geometry_msgs::PoseStamped>("collision", 1000);
@@ -110,7 +116,7 @@ int main(int argc, char **argv)
         path_pub.publish(path1);
         path2_pub.publish(path2);
         csrv.response.collision.header.frame_id = "map"; //TODO remove
-        collision_pub.publish(csrv.response.collision);
+        if(csrv.response.collision.header.seq != -1 )collision_pub.publish(csrv.response.collision);
     }
     return 0;
 }
