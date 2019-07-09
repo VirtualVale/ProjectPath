@@ -62,6 +62,7 @@ add_service_files(FILES
   pathsim.srv
   timesim.srv
   collisionsim.srv
+  path_randomizer.srv
 )
 
 ## Generate actions in the 'action' folder
