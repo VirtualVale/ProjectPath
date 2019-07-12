@@ -62,7 +62,6 @@ add_service_files(FILES
   pathsim.srv
   timesim.srv
   collisionsim.srv
-  path_randomizer.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -310,5 +309,13 @@ add_executable(fixed_collision_test
 )
 add_dependencies(fixed_collision_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(fixed_collision_test
+  ${catkin_LIBRARIES}
+)
+
+add_executable(process_example
+  src/process_example.cpp
+)
+add_dependencies(process_example ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(process_example
   ${catkin_LIBRARIES}
 )

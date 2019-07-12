@@ -5,7 +5,7 @@
 
   <!-- Turtlebot3_navigation -->
   <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch">
-    <arg name="map_file" value="$(find time_experiments)/maps/factory_map_polished.yaml"/>
+    <arg name="map_file" value="$(find time_experiments)/maps/house_map.yaml"/>
   </include>
 
 </launch>
