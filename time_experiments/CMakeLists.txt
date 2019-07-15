@@ -319,3 +319,11 @@ add_dependencies(process_example ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EX
 target_link_libraries(process_example
   ${catkin_LIBRARIES}
 )
+
+add_executable(process_simple_publisher
+  src/process_simple_publisher.cpp
+)
+add_dependencies(process_simple_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(process_simple_publisher
+  ${catkin_LIBRARIES}
+)

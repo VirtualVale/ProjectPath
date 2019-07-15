@@ -3,17 +3,32 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "time_experiments/pathsim.h"
 #include "time_experiments/timesim.h"
+#include "std_msgs/Time.h"
+#include "ros/time.h"
+
+//time for the snapshot
+ros::Time snapshot;
+
 
 std::vector<nav_msgs::Path> path_2_vector(std::vector<nav_msgs::Path> vector, float x1, float y1, float x2, float y2, ros::Time time, ros::ServiceClient path_client, ros::ServiceClient time_client);
 int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position);
+
+void timeCallback(const std_msgs::Time::ConstPtr& msg)
+{
+    snapshot = ros::Time((*msg).data.toSec());
+    ROS_INFO("new time toSec %lf", snapshot.toSec());
+    ROS_INFO("new time sec %d", snapshot.sec);
+    ROS_INFO("new time nsec %d", snapshot.nsec);
+    
+}
 
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "process_example");
     ros::NodeHandle n;
+    ros::Subscriber sub = n.subscribe("timer", 1000, timeCallback);
 
-    //time for the snapshot
-    ros::Time snapshot(atoi(argv[1]));
+    snapshot = ros::Time(atoi(argv[1]));
 
     //Publisher for the first robot
     ros::Publisher r1_pose_pub = n.advertise<geometry_msgs::PoseStamped>("r1_pose", 1000);
@@ -43,7 +58,7 @@ int main(int argc, char *argv[])
     plan_r1 = path_2_vector(plan_r1, 0, 0, 0, 5.5, ros::Time(100.00), path_client, time_client);
     plan_r1 = path_2_vector(plan_r1, 0, 5.5, 6, 5.5, ros::Time(110.00), path_client, time_client);
     plan_r1 = path_2_vector(plan_r1, 6, 5.5, 0, 0, ros::Time(120.00), path_client, time_client);
-    ROS_INFO("plan_r1: %i", plan_r1.size()); //for debugging
+    ROS_INFO("plan_r1: %lu", plan_r1.size()); //for debugging
 
     //plan for r2
     plan_r2 = path_2_vector(plan_r2, 0, 1, 3.5, 3.5, ros::Time(110.00), path_client, time_client);
@@ -57,13 +72,15 @@ int main(int argc, char *argv[])
 
     //debug and maybe how to get the position
     int r1_position[2], r2_position[2], r3_position[2];
-    time_2_poseID(snapshot ,plan_r1, r1_position);
-    time_2_poseID(snapshot ,plan_r2, r2_position);
-    time_2_poseID(snapshot ,plan_r3, r3_position);
-    ROS_INFO("Current pose at time %.2lf: x [%.2lf], y [%.2lf], path [%i], pose [%i]", snapshot.toSec(), plan_r1[r1_position[0]].poses[r1_position[1]].pose.position.x, plan_r1[r1_position[0]].poses[r1_position[1]].pose.position.y, r1_position[0], r1_position[1]);
+    //ROS_INFO("Current pose at time %.2lf: x [%.2lf], y [%.2lf], path [%i], pose [%i]", snapshot.toSec(), plan_r1[r1_position[0]].poses[r1_position[1]].pose.position.x, plan_r1[r1_position[0]].poses[r1_position[1]].pose.position.y, r1_position[0], r1_position[1]);
     
     //go through at first all paths/poses included in the vector
     while(ros::ok()){
+
+        //ROS_INFO("time before snapshotting %lf", snapshot.toSec());
+        time_2_poseID(snapshot ,plan_r1, r1_position);
+        time_2_poseID(snapshot ,plan_r2, r2_position);
+        time_2_poseID(snapshot ,plan_r3, r3_position);
 
         r1_path_f_pub.publish(plan_r1[r1_position[0]]);
         r1_pose_pub.publish(plan_r1[r1_position[0]].poses[r1_position[1]]); 
@@ -73,6 +90,8 @@ int main(int argc, char *argv[])
 
         r3_path_f_pub.publish(plan_r3[r3_position[0]]);
         r3_pose_pub.publish(plan_r3[r3_position[0]].poses[r3_position[1]]);
+
+        ros::spinOnce();
 
     }
 
@@ -113,15 +132,15 @@ std::vector<nav_msgs::Path> path_2_vector(std::vector<nav_msgs::Path> vector, fl
     }
 
     vector.push_back(tsrv.response.timesim_path);
-    ROS_INFO("vector size: %i", vector.size());
+    ROS_INFO("vector size: %lu", vector.size());
     return vector;
 }
 
 //search for the position of a pose element at a certain time
 int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position){
 
-    for(int i = 0; i<=vector.size(); i++){
-        for(int j = 0; j<=vector[i].poses.size(); j++){
+    for(int i = 0; i<vector.size(); i++){
+        for(int j = 0; j<vector[i].poses.size(); j++){
             if(vector[i].poses[j].header.stamp > snapshot){
 
                 //ROS_INFO("currentPosition %.2lf %.2lf at time %.2lf", vector[i].poses[j-1].pose.position.x, vector[i].poses[j-1].pose.position.y, vector[i].poses[j-1].header.stamp);
