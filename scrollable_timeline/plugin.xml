@@ -1,0 +1,20 @@
+<library path="src">
+  <class name="Scrollable Timeline" type="srcollable_timeline.timeline_module.SrcollableTimeline" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A slide control for the path planning system in the robot simulation.
+    </description>
+    <qtgui>
+      <!-- optional grouping...
+      <group>
+        <label>Group</label>
+      </group>
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <label>Scrollable Timeline</label>
+      <icon type="theme">system-help</icon>
+      <statustip>They see me scrolling...</statustip>
+    </qtgui>
+  </class>
+</library>
