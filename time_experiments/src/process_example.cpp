@@ -43,21 +43,36 @@ int main(int argc, char *argv[])
     plan_r1 = path_2_vector(plan_r1, 0, 0, 0, 5.5, ros::Time(100.00), path_client, time_client);
     plan_r1 = path_2_vector(plan_r1, 0, 5.5, 6, 5.5, ros::Time(110.00), path_client, time_client);
     plan_r1 = path_2_vector(plan_r1, 6, 5.5, 0, 0, ros::Time(120.00), path_client, time_client);
-
     ROS_INFO("plan_r1: %i", plan_r1.size()); //for debugging
 
+    //plan for r2
+    plan_r2 = path_2_vector(plan_r2, 0, 1, 3.5, 3.5, ros::Time(110.00), path_client, time_client);
+    plan_r2 = path_2_vector(plan_r2, 3.5, 3.5, 5.5, 3.5, ros::Time(120.00), path_client, time_client);
+    plan_r2 = path_2_vector(plan_r2, 5.5, 3.5, 0, 1, ros::Time(130.00), path_client, time_client);
+
+    //plan for r3
+    plan_r3 = path_2_vector(plan_r3, 0, 2, 5.5, 3.5, ros::Time(120.00), path_client, time_client);
+    plan_r3 = path_2_vector(plan_r3, 5.5, 3.5, 0, 2, ros::Time(130.00), path_client, time_client);
+    
+
     //debug and maybe how to get the position
-    int position[2];
-    time_2_poseID(snapshot ,plan_r1, position);
-    ROS_INFO("Current pose at time %.2lf: x [%.2lf], y [%.2lf], path [%i], pose [%i]", snapshot.toSec(), plan_r1[position[0]].poses[position[1]].pose.position.x, plan_r1[position[0]].poses[position[1]].pose.position.y, position[0], position[1]);
+    int r1_position[2], r2_position[2], r3_position[2];
+    time_2_poseID(snapshot ,plan_r1, r1_position);
+    time_2_poseID(snapshot ,plan_r2, r2_position);
+    time_2_poseID(snapshot ,plan_r3, r3_position);
+    ROS_INFO("Current pose at time %.2lf: x [%.2lf], y [%.2lf], path [%i], pose [%i]", snapshot.toSec(), plan_r1[r1_position[0]].poses[r1_position[1]].pose.position.x, plan_r1[r1_position[0]].poses[r1_position[1]].pose.position.y, r1_position[0], r1_position[1]);
     
     //go through at first all paths/poses included in the vector
     while(ros::ok()){
 
-        r1_path_f_pub.publish(plan_r1[0]); 
-        r2_path_f_pub.publish(plan_r1[1]);
-        r3_path_f_pub.publish(plan_r1[2]);
-        r1_pose_pub.publish(plan_r1[position[0]].poses[position[1]]);
+        r1_path_f_pub.publish(plan_r1[r1_position[0]]);
+        r1_pose_pub.publish(plan_r1[r1_position[0]].poses[r1_position[1]]); 
+        
+        r2_path_f_pub.publish(plan_r2[r2_position[0]]);
+        r2_pose_pub.publish(plan_r2[r2_position[0]].poses[r2_position[1]]);
+
+        r3_path_f_pub.publish(plan_r3[r3_position[0]]);
+        r3_pose_pub.publish(plan_r3[r3_position[0]].poses[r3_position[1]]);
 
     }
 
@@ -121,3 +136,4 @@ int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* p
 
 
 }
+
