@@ -15,7 +15,6 @@ bool simulatePath(time_experiments::pathsim::Request &req, time_experiments::pat
 
     tf::TransformListener tf(ros::Duration(10));
     costmap_2d::Costmap2DROS costmap ("costmap", tf);
-
     costmap.start();    
 
     navfn::NavfnROS navfn;

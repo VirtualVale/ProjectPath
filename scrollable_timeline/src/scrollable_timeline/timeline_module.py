@@ -2,6 +2,7 @@ import os
 import rospy
 import rospkg
 
+from std_msgs.msg import Time
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
@@ -28,7 +29,7 @@ class ScrollableTimeline(Plugin):
         # Create QWidget
         self._widget = QWidget()
         # Get path to UI file which should be in the "resource" folder of this package
-        ui_file = os.path.join(rospkg.RosPack().get_path('rqt_mypkg'), 'resource', 'MyPlugin.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('scrollable_timeline'), 'resource', 'ScrollableTimeline.ui')
         # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
         # Give QObjects reasonable names
@@ -42,6 +43,22 @@ class ScrollableTimeline(Plugin):
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
+
+        self._publisher = rospy.Publisher("timer", Time, queue_size=100)
+
+        self._widget.horizontalSlider.valueChanged.connect(self._on_slider_changed)
+
+    def _on_slider_changed(self):
+        self._widget.doubleSpinBox.setValue(self._widget.horizontalSlider.value())
+        self.on_parameter_changed()
+
+    def on_parameter_changed(self):
+        self._send_time(self._widget.horizontalSlider.value())
+    
+    def _send_time(self, time):
+        time = Time()
+        time.data.secs =  self._widget.horizontalSlider.value()
+        self._publisher.publish(time)
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
