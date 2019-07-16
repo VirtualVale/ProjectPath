@@ -17,6 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
   navfn
   nav_msgs
   geometry_msgs
+  actionlib_msgs
+  actionlib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -65,17 +67,18 @@ add_service_files(FILES
 )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+ add_action_files(
+   DIRECTORY action
+   FILES
+   Plan.action
+ )
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(DEPENDENCIES
   std_msgs
   geometry_msgs
   nav_msgs
+  actionlib_msgs
 )
 
 ################################################
@@ -110,6 +113,7 @@ generate_messages(DEPENDENCIES
 catkin_package(
   CATKIN_DEPENDS
   message_runtime
+  actionlib_msgs
 #  INCLUDE_DIRS include
 #  LIBRARIES time_experiments
 #  CATKIN_DEPENDS roscpp rospy std_msgs
@@ -325,5 +329,12 @@ add_executable(process_simple_publisher
 )
 add_dependencies(process_simple_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(process_simple_publisher
+  ${catkin_LIBRARIES}
+)
+
+add_executable(plan_actionserver src/actionserver/plan_actionserver.cpp)
+
+target_link_libraries(
+  plan_actionserver
   ${catkin_LIBRARIES}
 )
