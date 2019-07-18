@@ -70,7 +70,7 @@ add_service_files(FILES
  add_action_files(
    DIRECTORY action
    FILES
-   Plan.action
+   PTS.action
  )
 
 ## Generate added messages and services with any dependencies listed here
@@ -338,3 +338,19 @@ target_link_libraries(
   plan_actionserver
   ${catkin_LIBRARIES}
 )
+#add_executable(visualizer
+#  src/publisher/visualizer.cpp
+#)
+#add_dependencies(visualizer ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(visualizer
+#  ${catkin_LIBRARIES}
+#)
+
+#add_executable(visualizer_test
+#  src/tests/visualizer_test.cpp
+#)
+#add_dependencies(visualizer_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(visualizer_test
+#  ${catkin_LIBRARIES}
+#)
+
