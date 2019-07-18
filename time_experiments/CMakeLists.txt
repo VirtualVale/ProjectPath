@@ -353,4 +353,10 @@ target_link_libraries(
 #target_link_libraries(visualizer_test
 #  ${catkin_LIBRARIES}
 #)
-
+add_executable(plan_actionserver_test
+  src/tests/plan_actionserver_test.cpp
+)
+add_dependencies(plan_actionserver_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(plan_actionserver_test
+  ${catkin_LIBRARIES}
+)

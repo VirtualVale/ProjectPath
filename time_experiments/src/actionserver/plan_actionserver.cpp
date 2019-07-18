@@ -67,6 +67,23 @@ public:
     ros::Rate r(1);
     bool success = true;
 
+    switch (goal->resource_number)
+    {
+      case 1:
+        r1_plan = path_2_vector(r1_plan, 0, 0, goal->goal.pose.position.x, goal->goal.pose.position.y, goal->goal.header.stamp, path_client, time_client);
+        break;
+      case 2:
+        r2_plan = path_2_vector(r2_plan, 0, 1, goal->goal.pose.position.x, goal->goal.pose.position.y, goal->goal.header.stamp, path_client, time_client);
+        break;
+      case 3:
+        r3_plan = path_2_vector(r3_plan, 0, 2, goal->goal.pose.position.x, goal->goal.pose.position.y, goal->goal.header.stamp, path_client, time_client);
+        break;
+      default:
+        success = false;
+    }
+    
+    ROS_INFO("r1_plan: %i, r2_plan: %i, r3_plan: %i", r1_plan.size(), r2_plan.size(), r3_plan.size());
+
     /*
     // push_back the seeds for the fibonacci sequence
     feedback_.sequence.clear();
@@ -140,8 +157,6 @@ public:
       r3_path_f_pub.publish(r3_plan[r3_position[0]]);
       r3_pose_pub.publish(r3_plan[r3_position[0]].poses[r3_position[1]]);
   }
-
-
 };
 
 
@@ -151,7 +166,7 @@ int main(int argc, char** argv)
 
   PTSAction PTS("PTS");
   while(ros::ok()){
-    PTS.testFunction();
+    //PTS.testFunction();
     ros::spinOnce();
   }
 
