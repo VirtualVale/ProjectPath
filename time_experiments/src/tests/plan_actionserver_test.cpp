@@ -19,23 +19,41 @@ int main (int argc, char **argv)
   // send a goal to the action
   time_experiments::PTSGoal goal;
   goal.resource_number = 1;
-  goal.goal.pose.position.x = 1;
-  goal.goal.pose.position.y = 1;
-  goal.goal.header.stamp = ros::Time(100);
+  goal.goal.pose.position.x = 0;
+  goal.goal.pose.position.y = 5.5;
+  goal.start_time.data = ros::Time(100);
 
   ac.sendGoal(goal);
 
   //wait for the action to return
-  //bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
+  bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
 
-  /*if (finished_before_timeout)
+  if (finished_before_timeout)
   {
     actionlib::SimpleClientGoalState state = ac.getState();
     ROS_INFO("Action finished: %s",state.toString().c_str());
   }
   else
     ROS_INFO("Action did not finish before the time out.");
-*/
+
+  goal.resource_number = 1;
+  goal.goal.pose.position.x = 6;
+  goal.goal.pose.position.y = 5.5;
+  goal.start_time.data = ros::Time(110);
+
+  ac.sendGoal(goal);
+
+  //wait for the action to return
+  finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
+
+  if (finished_before_timeout)
+  {
+    actionlib::SimpleClientGoalState state = ac.getState();
+    ROS_INFO("Action finished: %s",state.toString().c_str());
+  }
+  else
+    ROS_INFO("Action did not finish before the time out.");
+
   //exit
   return 0;
 }

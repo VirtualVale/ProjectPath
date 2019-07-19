@@ -8,6 +8,8 @@
 
 std::vector<nav_msgs::Path> path_2_vector(std::vector<nav_msgs::Path> vector, float x1, float y1, float x2, float y2, ros::Time time, ros::ServiceClient path_client, ros::ServiceClient time_client);
 int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position);
+int currentPose(ros::Time currentTime, nav_msgs::Path currentPath);
+int currentPath(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
 
 class PTSAction
 {
@@ -36,12 +38,16 @@ protected:
   ros::Publisher r3_path_t_pub = n.advertise<nav_msgs::Path>("r3_path_t", 1000);
 
   //data generation
-  ros::Time snapshot = ros::Time(115.00);
+  ros::Time snapshot = ros::Time(102.00);
 
   //vector(path) for each robot
   std::vector<nav_msgs::Path> r1_plan;
   std::vector<nav_msgs::Path> r2_plan;
   std::vector<nav_msgs::Path> r3_plan;
+
+  //overall plan
+  std::vector<std::vector<nav_msgs::Path> > full_plan;
+  
 
   //clients for the pathplanning and timestamping
   ros::ServiceClient path_client = n.serviceClient<time_experiments::pathsim>("pathsim");
@@ -50,11 +56,15 @@ protected:
 
 public:
 
+
   PTSAction(std::string name) :
     as_(n, name, boost::bind(&PTSAction::executeCB, this, _1), false),
     action_name_(name)
   {
     as_.start();
+    full_plan.push_back(r1_plan);
+    full_plan.push_back(r2_plan);
+    full_plan.push_back(r3_plan);
   }
 
   ~PTSAction(void)
@@ -64,26 +74,63 @@ public:
   void executeCB(const time_experiments::PTSGoalConstPtr &goal)
   {
     // helper variables
-    ros::Rate r(1);
     bool success = true;
+    int resource = goal-> resource_number;
+    ros::Time startTime = goal->start_time.data;
+    ROS_INFO("startTime: %lf, goal->start.time.data %lf", startTime.toSec(), goal->start_time.data.toSec());
 
-    switch (goal->resource_number)
-    {
-      case 1:
-        r1_plan = path_2_vector(r1_plan, 0, 0, goal->goal.pose.position.x, goal->goal.pose.position.y, goal->goal.header.stamp, path_client, time_client);
-        break;
-      case 2:
-        r2_plan = path_2_vector(r2_plan, 0, 1, goal->goal.pose.position.x, goal->goal.pose.position.y, goal->goal.header.stamp, path_client, time_client);
-        break;
-      case 3:
-        r3_plan = path_2_vector(r3_plan, 0, 2, goal->goal.pose.position.x, goal->goal.pose.position.y, goal->goal.header.stamp, path_client, time_client);
-        break;
-      default:
-        success = false;
+    //START POSITION
+    double startX;
+    double startY; 
+    //no paths registered
+    if(full_plan[resource].size() == 0){
+      switch (resource)
+      {
+        case 1:
+          startX = 0;
+          startY = 0;
+          break;
+        case 2:
+          startX = 0;
+          startY = 1;
+          break;
+        case 3:
+          startX = 0;
+          startY = 2;
+          break;
+        default:
+          ROS_INFO("Error: Invalid resource number");
+      }
+    } else {
+      int pathId = currentPath(startTime, full_plan[resource]);
+      //time is after last registered path
+      if(pathId == -1){
+        startX = full_plan[resource].back().poses.back().pose.position.x;
+        startY = full_plan[resource].back().poses.back().pose.position.y;
+      } else {
+        //time is between zero time and last path
+        startX = full_plan[resource][pathId].poses.front().pose.position.x;
+        startY = full_plan[resource][pathId].poses.front().pose.position.y;
+      }
     }
-    
-    ROS_INFO("r1_plan: %i, r2_plan: %i, r3_plan: %i", r1_plan.size(), r2_plan.size(), r3_plan.size());
 
+    
+    double goalX = goal->goal.pose.position.x;
+    double goalY = goal->goal.pose.position.y;
+
+    ROS_INFO("planning resources: resource_nr %i, start %.2lf:%.2lf, goal %.2lf:%.2lf, time: %.2lf", resource,startX, startY, goalX, goalY, startTime);
+    
+
+    full_plan[resource] = path_2_vector(full_plan[resource],startX, startY, goalX, goalY, startTime, path_client, time_client);
+
+    
+    //ROS_INFO("r1_plan: %lu, r2_plan: %lu, r3_plan: %lu", r1_plan.size(), r2_plan.size(), r3_plan.size());
+    //ROS_INFO("TEST: r1_currentPath %lu, r1_currentPose: %lu", currentPath(snapshot, full_plan[resource]), currentPose(snapshot, full_plan[resource][currentPath(snapshot, full_plan[resource])]));
+    //ROS_INFO("38 time: %lf", full_plan[resource][0].poses[38].header.stamp.toSec());
+    as_.setSucceeded(result_);
+    /*while(ros::ok()){
+      r1_path_f_pub.publish(r1_plan[0]);
+    }*/
     /*
     // push_back the seeds for the fibonacci sequence
     feedback_.sequence.clear();
@@ -122,8 +169,11 @@ public:
     */
   }
 
+  void publishPlan(){
 
+  }
 
+  //for first test
   void testFunction(){
 
     //plan for r1
@@ -227,4 +277,24 @@ int main(int argc, char** argv)
         }
     }
     return 0;
+  }
+
+  //searches the current travelled path in the parameter plan
+  int currentPath(ros::Time currentTime, std::vector<nav_msgs::Path> plan){
+
+    for(int i=1; i<plan.size(); i++){
+      if(currentTime <= plan[i].poses.back().header.stamp)return i;
+    }
+    //return plan.size()-1; modified for start position
+    return -1;
+
+  }
+
+  //searches the current pose in the transferred path
+  int currentPose(ros::Time currentTime, nav_msgs::Path currentPath){
+
+    for(int i=1; i<currentPath.poses.size(); i++){
+      if(currentTime <= currentPath.poses[i].header.stamp)return i-1;
+    }
+    return currentPath.poses.size()-1;
   }
