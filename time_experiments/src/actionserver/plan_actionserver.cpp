@@ -46,16 +46,14 @@ protected:
   std::vector<nav_msgs::Path> r3_plan;
 
   //overall plan
-  std::vector<std::vector<nav_msgs::Path> > full_plan;
+  std::vector<std::vector<nav_msgs::Path> > full_plan[4];
   
-
   //clients for the pathplanning and timestamping
   ros::ServiceClient path_client = n.serviceClient<time_experiments::pathsim>("pathsim");
   ros::ServiceClient time_client = n.serviceClient<time_experiments::timesim>("timesim");
 
 
 public:
-
 
   PTSAction(std::string name) :
     as_(n, name, boost::bind(&PTSAction::executeCB, this, _1), false),
@@ -122,55 +120,42 @@ public:
     
 
     full_plan[resource] = path_2_vector(full_plan[resource],startX, startY, goalX, goalY, startTime, path_client, time_client);
-
-    
-    //ROS_INFO("r1_plan: %lu, r2_plan: %lu, r3_plan: %lu", r1_plan.size(), r2_plan.size(), r3_plan.size());
-    //ROS_INFO("TEST: r1_currentPath %lu, r1_currentPose: %lu", currentPath(snapshot, full_plan[resource]), currentPose(snapshot, full_plan[resource][currentPath(snapshot, full_plan[resource])]));
-    //ROS_INFO("38 time: %lf", full_plan[resource][0].poses[38].header.stamp.toSec());
     as_.setSucceeded(result_);
-    /*while(ros::ok()){
-      r1_path_f_pub.publish(r1_plan[0]);
-    }*/
-    /*
-    // push_back the seeds for the fibonacci sequence
-    feedback_.sequence.clear();
-    feedback_.sequence.push_back(0);
-    feedback_.sequence.push_back(1);
-
-    // publish info to the console for the user
-    ROS_INFO("%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i", action_name_.c_str(), goal->order, feedback_.sequence[0], feedback_.sequence[1]);
-
-    // start executing the action
-    for(int i=1; i<=goal->order; i++)
-    {
-      // check that preempt has not been requested by the client
-      if (as_.isPreemptRequested() || !ros::ok())
-      {
-        ROS_INFO("%s: Preempted", action_name_.c_str());
-        // set the action state to preempted
-        as_.setPreempted();
-        success = false;
-        break;
-      }
-      feedback_.sequence.push_back(feedback_.sequence[i] + feedback_.sequence[i-1]);
-      // publish the feedback
-      as_.publishFeedback(feedback_);
-      // this sleep is not necessary, the sequence is computed at 1 Hz for demonstration purposes
-      r.sleep();
-    }
-
-    if(success)
-    {
-      result_.sequence = feedback_.sequence;
-      ROS_INFO("%s: Succeeded", action_name_.c_str());
-      // set the action state to succeeded
-      as_.setSucceeded(result_);
-    }
-    */
+    
   }
 
   void publishPlan(){
+      
+      ROS_INFO("full plan: size %i, 1 %i, 2 %i, 3 %i", full_plan.size(), full_plan[1].size(), full_plan[2].size(), full_plan[3].size());
+      if(!full_plan[1].empty())r1_path_f_pub.publish(full_plan[1].front());
+      if(!full_plan[2].empty())r2_path_f_pub.publish(full_plan[2].front());
+      if(!full_plan[3].empty())r3_path_f_pub.publish(full_plan[3].front());
 
+        /*
+        int r1_position[2], r2_position[2], r3_position[2];
+
+        
+        time_2_poseID(snapshot ,r1_plan, r1_position);
+        time_2_poseID(snapshot ,r2_plan, r2_position);
+        time_2_poseID(snapshot ,r3_plan, r3_position);
+
+        if(full_plan[1].size() > 0){
+          r3_path_f_pub.publish(full_plan[1][r3_position[0]]);
+          r3_pose_pub.publish(full_plan[1][r3_position[0]].poses[r3_position[1]]);
+        }
+
+        if(full_plan[2].size() > 0){
+          r2_path_f_pub.publish(full_plan[2][r2_position[0]]);
+          r2_pose_pub.publish(full_plan[2][r2_position[0]].poses[r2_position[1]]);
+        }
+
+        if(full_plan[3].size() > 0){
+          r3_path_f_pub.publish(full_plan[3][r3_position[0]]);
+          r3_pose_pub.publish(full_plan[3][r3_position[0]].poses[r3_position[1]]);
+        }
+        */
+        
+        
   }
 
   //for first test
@@ -213,10 +198,9 @@ public:
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "PTS");
-
   PTSAction PTS("PTS");
   while(ros::ok()){
-    //PTS.testFunction();
+    PTS.publishPlan();
     ros::spinOnce();
   }
 
@@ -298,3 +282,47 @@ int main(int argc, char** argv)
     }
     return currentPath.poses.size()-1;
   }
+
+    //ROS_INFO("r1_plan: %lu, r2_plan: %lu, r3_plan: %lu", r1_plan.size(), r2_plan.size(), r3_plan.size());
+    //ROS_INFO("TEST: r1_currentPath %lu, r1_currentPose: %lu", currentPath(snapshot, full_plan[resource]), currentPose(snapshot, full_plan[resource][currentPath(snapshot, full_plan[resource])]));
+    //ROS_INFO("38 time: %lf", full_plan[resource][0].poses[38].header.stamp.toSec());
+
+    /*while(ros::ok()){
+      r1_path_f_pub.publish(r1_plan[0]);
+    }*/
+    /*
+    // push_back the seeds for the fibonacci sequence
+    feedback_.sequence.clear();
+    feedback_.sequence.push_back(0);
+    feedback_.sequence.push_back(1);
+
+    // publish info to the console for the user
+    ROS_INFO("%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i", action_name_.c_str(), goal->order, feedback_.sequence[0], feedback_.sequence[1]);
+
+    // start executing the action
+    for(int i=1; i<=goal->order; i++)
+    {
+      // check that preempt has not been requested by the client
+      if (as_.isPreemptRequested() || !ros::ok())
+      {
+        ROS_INFO("%s: Preempted", action_name_.c_str());
+        // set the action state to preempted
+        as_.setPreempted();
+        success = false;
+        break;
+      }
+      feedback_.sequence.push_back(feedback_.sequence[i] + feedback_.sequence[i-1]);
+      // publish the feedback
+      as_.publishFeedback(feedback_);
+      // this sleep is not necessary, the sequence is computed at 1 Hz for demonstration purposes
+      r.sleep();
+    }
+
+    if(success)
+    {
+      result_.sequence = feedback_.sequence;
+      ROS_INFO("%s: Succeeded", action_name_.c_str());
+      // set the action state to succeeded
+      as_.setSucceeded(result_);
+    }
+    */
