@@ -6,10 +6,21 @@
 #include "time_experiments/pathsim.h"
 #include "time_experiments/timesim.h"
 
+ros::Time snapshot;
+
 std::vector<nav_msgs::Path> path_2_vector(std::vector<nav_msgs::Path> vector, float x1, float y1, float x2, float y2, ros::Time time, ros::ServiceClient path_client, ros::ServiceClient time_client);
 int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position);
 int currentPose(ros::Time currentTime, nav_msgs::Path currentPath);
 int currentPath(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
+
+void timeCallback(const std_msgs::Time::ConstPtr& msg)
+{
+    snapshot = ros::Time((*msg).data.toSec());
+    ROS_INFO("new time toSec %lf", snapshot.toSec());
+    ROS_INFO("new time sec %d", snapshot.sec);
+    ROS_INFO("new time nsec %d", snapshot.nsec);
+    
+}
 
 class PTSAction
 {
@@ -36,9 +47,6 @@ protected:
   ros::Publisher r3_pose_pub = n.advertise<geometry_msgs::PoseStamped>("r3_pose", 1000);
   ros::Publisher r3_path_f_pub = n.advertise<nav_msgs::Path>("r3_path_f", 1000);
   ros::Publisher r3_path_t_pub = n.advertise<nav_msgs::Path>("r3_path_t", 1000);
-
-  //data generation
-  ros::Time snapshot = ros::Time(112.00);
 
   //vector(path) for each robot
   std::vector<nav_msgs::Path> r1_plan;
@@ -195,6 +203,9 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "PTS");
   PTSAction PTS("PTS");
+  ros::NodeHandle n;
+  ros::Subscriber sub = n.subscribe("timer", 1000, timeCallback);
+  snapshot = ros::Time(100);
   while(ros::ok()){
     PTS.publishPlan();
     ros::spinOnce();
