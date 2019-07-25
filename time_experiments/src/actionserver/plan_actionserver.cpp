@@ -38,7 +38,7 @@ protected:
   ros::Publisher r3_path_t_pub = n.advertise<nav_msgs::Path>("r3_path_t", 1000);
 
   //data generation
-  ros::Time snapshot = ros::Time(102.00);
+  ros::Time snapshot = ros::Time(112.00);
 
   //vector(path) for each robot
   std::vector<nav_msgs::Path> r1_plan;
@@ -46,7 +46,7 @@ protected:
   std::vector<nav_msgs::Path> r3_plan;
 
   //overall plan
-  std::vector<std::vector<nav_msgs::Path> > full_plan[4];
+  std::vector<std::vector<nav_msgs::Path> > full_plan;
   
   //clients for the pathplanning and timestamping
   ros::ServiceClient path_client = n.serviceClient<time_experiments::pathsim>("pathsim");
@@ -73,7 +73,8 @@ public:
   {
     // helper variables
     bool success = true;
-    int resource = goal-> resource_number;
+    //Resources 1,2,3 are mapped to 0,1,2
+    int resource = (goal-> resource_number) - 1;
     ros::Time startTime = goal->start_time.data;
     ROS_INFO("startTime: %lf, goal->start.time.data %lf", startTime.toSec(), goal->start_time.data.toSec());
 
@@ -84,15 +85,15 @@ public:
     if(full_plan[resource].size() == 0){
       switch (resource)
       {
-        case 1:
+        case 0:
           startX = 0;
           startY = 0;
           break;
-        case 2:
+        case 1:
           startX = 0;
           startY = 1;
           break;
-        case 3:
+        case 2:
           startX = 0;
           startY = 2;
           break;
@@ -125,35 +126,30 @@ public:
   }
 
   void publishPlan(){
-      
-      ROS_INFO("full plan: size %i, 1 %i, 2 %i, 3 %i", full_plan.size(), full_plan[1].size(), full_plan[2].size(), full_plan[3].size());
-      if(!full_plan[1].empty())r1_path_f_pub.publish(full_plan[1].front());
-      if(!full_plan[2].empty())r2_path_f_pub.publish(full_plan[2].front());
-      if(!full_plan[3].empty())r3_path_f_pub.publish(full_plan[3].front());
-
-        /*
+         
         int r1_position[2], r2_position[2], r3_position[2];
 
+        if(!full_plan[0].empty()){
+          ROS_INFO("plan1pub");
+          time_2_poseID(snapshot ,full_plan[0], r1_position);
+          r1_path_f_pub.publish(full_plan[0][r1_position[0]]);
+          r1_pose_pub.publish(full_plan[0][r1_position[0]].poses[r1_position[1]]);
+        }
+
+        if(!full_plan[1].empty()){
+          ROS_INFO("plan2pub");
+          time_2_poseID(snapshot ,full_plan[1], r2_position);
+          r2_path_f_pub.publish(full_plan[1][r2_position[0]]);
+          r2_pose_pub.publish(full_plan[1][r2_position[0]].poses[r2_position[1]]);
+        }
+
+        if(!full_plan[2].empty()){
+          ROS_INFO("plan3pub");
+          time_2_poseID(snapshot ,full_plan[2], r3_position);
+          r3_path_f_pub.publish(full_plan[2][r3_position[0]]);
+          r3_pose_pub.publish(full_plan[2][r3_position[0]].poses[r3_position[1]]);
+        }
         
-        time_2_poseID(snapshot ,r1_plan, r1_position);
-        time_2_poseID(snapshot ,r2_plan, r2_position);
-        time_2_poseID(snapshot ,r3_plan, r3_position);
-
-        if(full_plan[1].size() > 0){
-          r3_path_f_pub.publish(full_plan[1][r3_position[0]]);
-          r3_pose_pub.publish(full_plan[1][r3_position[0]].poses[r3_position[1]]);
-        }
-
-        if(full_plan[2].size() > 0){
-          r2_path_f_pub.publish(full_plan[2][r2_position[0]]);
-          r2_pose_pub.publish(full_plan[2][r2_position[0]].poses[r2_position[1]]);
-        }
-
-        if(full_plan[3].size() > 0){
-          r3_path_f_pub.publish(full_plan[3][r3_position[0]]);
-          r3_pose_pub.publish(full_plan[3][r3_position[0]].poses[r3_position[1]]);
-        }
-        */
         
         
   }
@@ -249,10 +245,11 @@ int main(int argc, char** argv)
   int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position){
 
     for(int i = 0; i<vector.size(); i++){
+        ROS_INFO("vecsize: %i", vector.size());
         for(int j = 0; j<vector[i].poses.size(); j++){
             if(vector[i].poses[j].header.stamp > snapshot){
 
-                //ROS_INFO("currentPosition %.2lf %.2lf at time %.2lf", vector[i].poses[j-1].pose.position.x, vector[i].poses[j-1].pose.position.y, vector[i].poses[j-1].header.stamp);
+                ROS_INFO("currentPosition %.2lf %.2lf at time %.2lf", vector[i].poses[j-1].pose.position.x, vector[i].poses[j-1].pose.position.y, vector[i].poses[j-1].header.stamp);
                 position[0] = i;
                 position[1] = j;
                 return 1;
