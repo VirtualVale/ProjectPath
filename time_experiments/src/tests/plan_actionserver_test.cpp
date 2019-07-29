@@ -39,7 +39,7 @@ int main (int argc, char **argv)
   goal.resource_number = 1;
   goal.goal.pose.position.x = 6;
   goal.goal.pose.position.y = 5.5;
-  goal.start_time.data = ros::Time(110);
+  goal.start_time.data = ros::Time(115);
 
   ac.sendGoal(goal);
 
@@ -58,6 +58,42 @@ int main (int argc, char **argv)
   goal.goal.pose.position.x = 6;
   goal.goal.pose.position.y = 5.5;
   goal.start_time.data = ros::Time(110);
+
+  ac.sendGoal(goal);
+
+  //wait for the action to return
+  finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
+
+  if (finished_before_timeout)
+  {
+    actionlib::SimpleClientGoalState state = ac.getState();
+    ROS_INFO("Action finished: %s",state.toString().c_str());
+  }
+  else
+    ROS_INFO("Action did not finish before the time out.");
+
+  goal.resource_number = 3;
+  goal.goal.pose.position.x = 5.5;
+  goal.goal.pose.position.y = 3.5;
+  goal.start_time.data = ros::Time(120);
+
+  ac.sendGoal(goal);
+
+  //wait for the action to return
+  finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
+
+  if (finished_before_timeout)
+  {
+    actionlib::SimpleClientGoalState state = ac.getState();
+    ROS_INFO("Action finished: %s",state.toString().c_str());
+  }
+  else
+    ROS_INFO("Action did not finish before the time out.");
+
+  goal.resource_number = 1;
+  goal.goal.pose.position.x = 0;
+  goal.goal.pose.position.y = 0;
+  goal.start_time.data = ros::Time(130);
 
   ac.sendGoal(goal);
 

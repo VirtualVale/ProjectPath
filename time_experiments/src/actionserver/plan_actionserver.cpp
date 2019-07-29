@@ -12,6 +12,7 @@ std::vector<nav_msgs::Path> path_2_vector(std::vector<nav_msgs::Path> vector, fl
 int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position);
 int currentPose(ros::Time currentTime, nav_msgs::Path currentPath);
 int currentPath(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
+int currentPosition(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position);
 
 void timeCallback(const std_msgs::Time::ConstPtr& msg)
 {
@@ -19,7 +20,6 @@ void timeCallback(const std_msgs::Time::ConstPtr& msg)
     ROS_INFO("new time toSec %lf", snapshot.toSec());
     ROS_INFO("new time sec %d", snapshot.sec);
     ROS_INFO("new time nsec %d", snapshot.nsec);
-    
 }
 
 class PTSAction
@@ -81,16 +81,20 @@ public:
   {
     // helper variables
     bool success = true;
+
+    //RESOURCE
     //Resources 1,2,3 are mapped to 0,1,2
     int resource = (goal-> resource_number) - 1;
+
+    //START TIME
     ros::Time startTime = goal->start_time.data;
-    ROS_INFO("startTime: %lf, goal->start.time.data %lf", startTime.toSec(), goal->start_time.data.toSec());
 
     //START POSITION
     double startX;
     double startY; 
     //no paths registered
     if(full_plan[resource].size() == 0){
+      ROS_INFO("START POSITION: first path is initialized");
       switch (resource)
       {
         case 0:
@@ -110,18 +114,12 @@ public:
       }
     } else {
       int pathId = currentPath(startTime, full_plan[resource]);
-      //time is after last registered path
-      if(pathId == -1){
-        startX = full_plan[resource].back().poses.back().pose.position.x;
-        startY = full_plan[resource].back().poses.back().pose.position.y;
-      } else {
-        //time is between zero time and last path
-        startX = full_plan[resource][pathId].poses.front().pose.position.x;
-        startY = full_plan[resource][pathId].poses.front().pose.position.y;
-      }
+      //time is between zero time and last path
+      startX = full_plan[resource][pathId].poses.back().pose.position.x;
+      startY = full_plan[resource][pathId].poses.back().pose.position.y;
     }
 
-    
+    //GOAL POSITION
     double goalX = goal->goal.pose.position.x;
     double goalY = goal->goal.pose.position.y;
 
@@ -135,27 +133,24 @@ public:
 
   void publishPlan(){
          
-        int r1_position[2], r2_position[2], r3_position[2];
+        nav_msgs::Path r1_currentPath, r2_currentPath, r3_currentPath;
 
         if(!full_plan[0].empty()){
-          ROS_INFO("plan1pub");
-          time_2_poseID(snapshot ,full_plan[0], r1_position);
-          r1_path_f_pub.publish(full_plan[0][r1_position[0]]);
-          r1_pose_pub.publish(full_plan[0][r1_position[0]].poses[r1_position[1]]);
+          r1_currentPath = full_plan[0][currentPath(snapshot, full_plan[0])];
+          r1_path_f_pub.publish(r1_currentPath);
+          r1_pose_pub.publish(r1_currentPath.poses[currentPose(snapshot, r1_currentPath)]);
         }
 
         if(!full_plan[1].empty()){
-          ROS_INFO("plan2pub");
-          time_2_poseID(snapshot ,full_plan[1], r2_position);
-          r2_path_f_pub.publish(full_plan[1][r2_position[0]]);
-          r2_pose_pub.publish(full_plan[1][r2_position[0]].poses[r2_position[1]]);
+          r2_currentPath = full_plan[1][currentPath(snapshot, full_plan[1])];
+          r2_path_f_pub.publish(r2_currentPath);
+          r2_pose_pub.publish(r2_currentPath.poses[currentPose(snapshot, r2_currentPath)]);
         }
 
         if(!full_plan[2].empty()){
-          ROS_INFO("plan3pub");
-          time_2_poseID(snapshot ,full_plan[2], r3_position);
-          r3_path_f_pub.publish(full_plan[2][r3_position[0]]);
-          r3_pose_pub.publish(full_plan[2][r3_position[0]].poses[r3_position[1]]);
+          r3_currentPath = full_plan[2][currentPath(snapshot, full_plan[2])];
+          r3_path_f_pub.publish(r3_currentPath);
+          r3_pose_pub.publish(r3_currentPath.poses[currentPose(snapshot, full_plan[2][currentPath(snapshot, full_plan[2])])]);
         }
         
         
@@ -253,14 +248,48 @@ int main(int argc, char** argv)
       return vector;
   }
 
+  //searches the current travelled path in the parameter plan
+  int currentPath(ros::Time currentTime, std::vector<nav_msgs::Path> plan){
+
+    int pathID = 0;
+    double diff, optDiff = 100.00;
+    for(int i=0; i<plan.size(); ++i){
+      for(int j=0; j<plan[i].poses.size(); ++j){
+        diff = abs(currentTime.toSec() - plan[i].poses[j].header.stamp.toSec());
+        if(diff < optDiff){
+          optDiff = diff;
+          pathID = i;
+        }
+      }
+      //ROS_INFO("for-Loop(currentPath) i = %i, optDiff = %lf, diff = %lf, pathID = %i", i, optDiff, diff, pathID);
+    }
+    return pathID;
+  }
+
+  //searches the current pose in the transferred path TODO minimize calculation time with logarithmic improvements
+  int currentPose(ros::Time currentTime, nav_msgs::Path currentPath){
+
+    int poseID = 0;
+    double diff, optDiff = 100.00;
+    for(int i=0; i<currentPath.poses.size(); i++){
+      diff = abs(currentTime.toSec() - currentPath.poses[i].header.stamp.toSec());
+      if(diff < optDiff){
+        optDiff = diff;
+        poseID = i;
+      }
+      //ROS_INFO("for-Loop(currentPose): i = %i, optDiff = %lf, diff = %lf, poseID = %i", i, optDiff, diff, poseID);
+    }
+    return poseID;
+  }
+
+/*
   int time_2_poseID(ros::Time snapshot, std::vector<nav_msgs::Path> vector, int* position){
 
     for(int i = 0; i<vector.size(); i++){
-        ROS_INFO("vecsize: %i", vector.size());
         for(int j = 0; j<vector[i].poses.size(); j++){
             if(vector[i].poses[j].header.stamp > snapshot){
 
-                ROS_INFO("currentPosition %.2lf %.2lf at time %.2lf", vector[i].poses[j-1].pose.position.x, vector[i].poses[j-1].pose.position.y, vector[i].poses[j-1].header.stamp);
+                //ROS_INFO("currentPosition %.2lf %.2lf at time %.2lf", vector[i].poses[j-1].pose.position.x, vector[i].poses[j-1].pose.position.y, vector[i].poses[j-1].header.stamp);
                 position[0] = i;
                 position[1] = j;
                 return 1;
@@ -270,27 +299,7 @@ int main(int argc, char** argv)
     }
     return 0;
   }
-
-  //searches the current travelled path in the parameter plan
-  int currentPath(ros::Time currentTime, std::vector<nav_msgs::Path> plan){
-
-    for(int i=1; i<plan.size(); i++){
-      if(currentTime <= plan[i].poses.back().header.stamp)return i;
-    }
-    //return plan.size()-1; modified for start position
-    return -1;
-
-  }
-
-  //searches the current pose in the transferred path
-  int currentPose(ros::Time currentTime, nav_msgs::Path currentPath){
-
-    for(int i=1; i<currentPath.poses.size(); i++){
-      if(currentTime <= currentPath.poses[i].header.stamp)return i-1;
-    }
-    return currentPath.poses.size()-1;
-  }
-
+  */
     //ROS_INFO("r1_plan: %lu, r2_plan: %lu, r3_plan: %lu", r1_plan.size(), r2_plan.size(), r3_plan.size());
     //ROS_INFO("TEST: r1_currentPath %lu, r1_currentPose: %lu", currentPath(snapshot, full_plan[resource]), currentPose(snapshot, full_plan[resource][currentPath(snapshot, full_plan[resource])]));
     //ROS_INFO("38 time: %lf", full_plan[resource][0].poses[38].header.stamp.toSec());
