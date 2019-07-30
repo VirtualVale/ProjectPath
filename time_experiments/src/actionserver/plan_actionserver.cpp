@@ -60,7 +60,7 @@ protected:
   //clients for the pathplanning and timestamping
   ros::ServiceClient path_client = n.serviceClient<time_experiments::pathsim>("pathsim");
   ros::ServiceClient time_client = n.serviceClient<time_experiments::timesim>("timesim");
-
+  ros::ServiceClient collision_client = n.serviceClient<time_experiments::collisionsim>("collisionsim");
 
 public:
 
@@ -129,8 +129,36 @@ public:
     full_plan[resource] = path_2_vector(full_plan[resource],startX, startY, goalX, goalY, startTime, path_client, time_client);
     
     //COLLISIONCHECKING
-    for(int i = resource; i<full_plan.size(); i++){
-      
+    time_experiments::collisionsim csrv;
+    csrv.request.superior = full_plan[resource].back();
+
+    for(int i = resource+1; i<full_plan.size(); i++){
+      for(int j = 0; j<full_plan[i].size(); j++){
+        
+        csrv.request.inferior = full_plan[i][j];
+        ROS_INFO("COLLISIONCHECKING: resource: %i, Pathnr: %i", i, j);
+        if(collision_client.call(csrv)){
+            ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
+            ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
+        } else {
+            ROS_INFO("Paths do not collide!");
+            
+        }
+      }
+    }
+    for(int i = resource-1; i>=0; i--){
+      for(int j = 0; j<full_plan[i].size(); j++){
+        
+        csrv.request.inferior = full_plan[i][j];
+        ROS_INFO("COLLISIONCHECKING: resource: %i, Pathnr: %i", i, j);
+        if(collision_client.call(csrv)){
+            ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
+            ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
+        } else {
+            ROS_INFO("Paths do not collide!");
+            
+        }
+      }
     }
     
     as_.setSucceeded(result_);
