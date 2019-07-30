@@ -5,6 +5,7 @@
 #include "ros/time.h"
 #include "time_experiments/pathsim.h"
 #include "time_experiments/timesim.h"
+#include "time_experiments/collisionsim.h"
 
 ros::Time snapshot;
 
@@ -123,10 +124,15 @@ public:
     double goalX = goal->goal.pose.position.x;
     double goalY = goal->goal.pose.position.y;
 
+    //PATHCREATION AND TIMESTAMPING + ADDING TO THE PLAN
     ROS_INFO("planning resources: resource_nr %i, start %.2lf:%.2lf, goal %.2lf:%.2lf, time: %.2lf", resource,startX, startY, goalX, goalY, startTime);
-    
-
     full_plan[resource] = path_2_vector(full_plan[resource],startX, startY, goalX, goalY, startTime, path_client, time_client);
+    
+    //COLLISIONCHECKING
+    for(int i = resource; i<full_plan.size(); i++){
+      
+    }
+    
     as_.setSucceeded(result_);
     
   }
