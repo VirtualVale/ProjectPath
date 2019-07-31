@@ -137,13 +137,20 @@ public:
         
         csrv.request.inferior = full_plan[i][j];
         ROS_INFO("COLLISIONCHECKING: resource: %i, Pathnr: %i", i, j);
-        if(collision_client.call(csrv)){
-            ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
-            ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
-        } else {
-            ROS_INFO("Paths do not collide!");
-            
-        }
+      if(collision_client.call(csrv)){
+          if(csrv.response.collision.header.seq == -1 ){
+              ROS_INFO("Seq.nr. : %i", csrv.response.collision.header.seq);
+              ROS_INFO("No Collision");
+          } else {
+              ROS_INFO("Seq.nr. : %i", csrv.response.collision.header.seq);
+              ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
+              ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
+          }
+
+      } else {
+          ROS_INFO("Collisioncheck failed!");
+          //return 1;
+      }
       }
     }
     for(int i = resource-1; i>=0; i--){
@@ -152,11 +159,18 @@ public:
         csrv.request.inferior = full_plan[i][j];
         ROS_INFO("COLLISIONCHECKING: resource: %i, Pathnr: %i", i, j);
         if(collision_client.call(csrv)){
-            ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
-            ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
+            if(csrv.response.collision.header.seq == -1 ){
+                ROS_INFO("Seq.nr. : %i", csrv.response.collision.header.seq);
+                ROS_INFO("No Collision");
+            } else {
+                ROS_INFO("Seq.nr. : %i", csrv.response.collision.header.seq);
+                ROS_INFO("Collision at Time: %i", csrv.response.collision.header.stamp.sec);
+                ROS_INFO("Collision at Coordinates: %f, %f", csrv.response.collision.pose.position.x, csrv.response.collision.pose.position.y);
+            }
+
         } else {
-            ROS_INFO("Paths do not collide!");
-            
+            ROS_INFO("Collisioncheck failed!");
+            //return 1;
         }
       }
     }
