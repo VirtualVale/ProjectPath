@@ -1,0 +1,14 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find chronos)/maps/factory_map_polished.yaml"/>
+  <arg name="open_rviz" default="true"/>
+
+  <!--Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find chronos)/cfg/chronos.rviz"/>
+  </group>
+</launch>
