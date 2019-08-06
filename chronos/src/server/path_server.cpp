@@ -1,10 +1,10 @@
 #include "ros/ros.h"
-#include "time_experiments/pathsim.h"
+#include "chronos/path_service.h"
 #include <tf/transform_listener.h>
 #include <costmap_2d/costmap_2d_ros.h>
 #include <navfn/navfn_ros.h>
 
-bool simulatePath(time_experiments::pathsim::Request &req, time_experiments::pathsim::Response &res)
+bool createPath(chronos::path_service::Request &req, chronos::path_service::Response &res)
 {
     std::vector<geometry_msgs::PoseStamped> plan;
 
@@ -26,4 +26,16 @@ bool simulatePath(time_experiments::pathsim::Request &req, time_experiments::pat
     ROS_INFO("plan size: %d", (int) res.path.poses.size());
 
     return true;
+}
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "path_server");
+    ros::NodeHandle n;
+
+    ros::ServiceServer service = n.advertiseService("path_service", createPath);
+    ROS_INFO("Ready to simulate a path.");
+
+    ros::spin();
+
+    return 0;
 }

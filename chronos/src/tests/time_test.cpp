@@ -1,13 +1,14 @@
 #include "ros/ros.h"
-#include "chronos/pathsim.h"
 #include "chronos/time_service.h"
 #include "nav_msgs/Path.h"
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "timeserver_test");
+    ros::init(argc, argv, "time_test");
     ros::NodeHandle n;
-    ros::Publisher path_pub = n.advertise<nav_msgs::Path>("time_service", 1000);
+    ros::Publisher path_pub = n.advertise<nav_msgs::Path>("time_test", 1000);
+    ros::ServiceClient time_client = n.serviceClient<chronos::time_service>("time_service");
+    chronos::time_service tsrv;
 
     /*
       Parameter [1] Number of positions
@@ -15,6 +16,7 @@ int main(int argc, char **argv)
                 [3] y range between every position
                 [4] average velocity - Vorkomma
                 [5] average velocity - nachkomma
+                [6] start Time
     */
 
     //Verification of the parameters
@@ -23,10 +25,9 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    //Implementation of a fix path constructed with the stated parameters
-    nav_msgs::Path path_fix;
-    path_fix.header.stamp.sec = 100;
-    path_fix.header.frame_id = "map";
+    //setting up a auto constructed path
+    nav_msgs::Path path;
+    path.header.frame_id = "map";
 
     geometry_msgs::PoseStamped pose_variable;
 
@@ -39,22 +40,16 @@ int main(int argc, char **argv)
         pose_variable.pose.position.x = i*atoi(argv[2]);
         pose_variable.pose.position.y = i*atoi(argv[3]);
         pose_variable.pose.orientation.w = 1;
-        path_fix.poses.push_back(pose_variable);
-
-        //ROS_INFO("Position [%i] at x: [%.2f] added.", i, pose_variable.pose.position.x);
+        path.poses.push_back(pose_variable);
     }
 
-    ROS_INFO("Path size: %lu", path_fix.poses.size());
-
-    ros::ServiceClient time_client = n.serviceClient<chronos::time_service>("time_service");
-    chronos::time_service tsrv;
-
-    tsrv.request.original_path = path_fix;
+    tsrv.request.path = path;
     tsrv.request.average_velocity = atoi(argv[4]) + (0.1*atoi(argv[5]));
+    tsrv.request.startTime = atoi(argv[6]);
 
     if(time_client.call(tsrv)){
-      ROS_INFO("Start time: %.2f, end time: %.2f, average traveltime: %.2f", tsrv.response.path_timestamped.poses.front().header.stamp.toSec(), tsrv.response.path_timestamped.poses.back().header.stamp.toSec(),(tsrv.response.path_timestamped.poses.back().header.stamp.toSec() - tsrv.response.path_timestamped.poses.front().header.stamp.toSec()) / tsrv.response.path_timestamped.poses.size()); 
-      ROS_INFO("success\n       Timestamped path is published on the time_service topic.");
+      ROS_INFO("Start time: %.2f\nEnd time: %.2f, average traveltime: %.2f", tsrv.response.path_timestamped.poses.front().header.stamp.toSec(), tsrv.response.path_timestamped.poses.back().header.stamp.toSec(),(tsrv.response.path_timestamped.poses.back().header.stamp.toSec() - tsrv.response.path_timestamped.poses.front().header.stamp.toSec()) / tsrv.response.path_timestamped.poses.size()); 
+      ROS_INFO("Timestamped path is published on the time_service topic.");
     } else {
       ROS_INFO("Failed");
       return 1;
@@ -63,5 +58,5 @@ int main(int argc, char **argv)
     while(ros::ok()){
         path_pub.publish(tsrv.response.path_timestamped);
     }
-    return 0;
-}
+    return 0;    
+}    

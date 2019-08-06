@@ -12,8 +12,6 @@
   <node name="path_server" pkg="chronos" type="path_server" output="screen" >
     <rosparam file="$(find chronos)/cfg/costmap_example.yaml" command="load" ns="costmap" />
   </node>
-
-  <node name="time_server" pkg="chronos" type="time_server" output="screen" />
-  <node name="collision_server" pkg="chronos" type="collision_server" output="screen" />
+  
 
 </launch>

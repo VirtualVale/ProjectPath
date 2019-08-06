@@ -211,6 +211,7 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
+#[[
 add_executable(pathsim
   src/pathsim.cpp
 )
@@ -361,3 +362,4 @@ add_dependencies(plan_actionserver_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${ca
 target_link_libraries(plan_actionserver_test
   ${catkin_LIBRARIES}
 )
+]]
