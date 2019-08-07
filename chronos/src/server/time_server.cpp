@@ -8,7 +8,7 @@ bool stampTime(chronos::time_service::Request &req, chronos::time_service::Respo
         ROS_INFO("Velocities <= 0 are not valid!");
         return 1;
     }
-
+    
     req.path.poses[0].header.stamp = ros::Time(req.startTime);
     for(int i=1; i<req.path.poses.size(); i++){
         //calculate distance btw pair of poses
@@ -17,6 +17,7 @@ bool stampTime(chronos::time_service::Request &req, chronos::time_service::Respo
         double travel_time = euclideanDistance/ req.average_velocity;
         req.path.poses[i].header.stamp = req.path.poses[i-1].header.stamp + ros::Duration(travel_time);
     }
+    req.path.header.stamp = ros::Time(req.startTime);
     res.path_timestamped = req.path;
     return true;
 }

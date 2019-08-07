@@ -18,14 +18,14 @@ int main(int argc, char **argv)
                 [5] average velocity - nachkomma
                 [6] start Time
     */
-
     //Verification of the parameters
-    if(!isdigit(*argv[1]) || !isdigit(*argv[2]) || !isdigit(*argv[3]) || !isdigit(*argv[4]) || !isdigit(*argv[5]) ){
-        ROS_INFO("CHECK THE PARAMETERS\n[1] Number of positions\n[2] x range between every position\n[3] y range between every position\n[4] average velocity - before decimal point\n[5] average velocity - after decimal point");
+    if(argc != 7 || !isdigit(*argv[1]) || !isdigit(*argv[2]) || !isdigit(*argv[3]) || !isdigit(*argv[4]) || !isdigit(*argv[5]) || !isdigit(*argv[6])){
+        
+        ROS_INFO("CHECK THE PARAMETERS\n[1] Number of positions\n[2] x range between every position\n[3] y range between every position\n[4] average velocity - before decimal point\n[5] average velocity - after decimal point\n[6] start time");
         return 1;
     }
 
-    //setting up a auto constructed path
+    //setting up an auto constructed path
     nav_msgs::Path path;
     path.header.frame_id = "map";
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     tsrv.request.startTime = atoi(argv[6]);
 
     if(time_client.call(tsrv)){
-      ROS_INFO("Start time: %.2f\nEnd time: %.2f, average traveltime: %.2f", tsrv.response.path_timestamped.poses.front().header.stamp.toSec(), tsrv.response.path_timestamped.poses.back().header.stamp.toSec(),(tsrv.response.path_timestamped.poses.back().header.stamp.toSec() - tsrv.response.path_timestamped.poses.front().header.stamp.toSec()) / tsrv.response.path_timestamped.poses.size()); 
+      ROS_INFO("Start time: %.2f\nEnd time: %.2f\nAverage traveltime: %.2f", tsrv.response.path_timestamped.poses.front().header.stamp.toSec(), tsrv.response.path_timestamped.poses.back().header.stamp.toSec(),(tsrv.response.path_timestamped.poses.back().header.stamp.toSec() - tsrv.response.path_timestamped.poses.front().header.stamp.toSec()) / tsrv.response.path_timestamped.poses.size()); 
       ROS_INFO("Timestamped path is published on the time_service topic.");
     } else {
       ROS_INFO("Failed");

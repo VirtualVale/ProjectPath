@@ -10,7 +10,7 @@ int main(int argc, char **argv)
     ros::Publisher path_pub = n.advertise<nav_msgs::Path>("path_test", 1000);
     chronos::path_service psrv;
 
-    if(isdigit(atoi(argv[1])) || isdigit(atoi(argv[2])) || isdigit(atoi(argv[3])) || isdigit(atoi(argv[4]))){
+    if(argc != 5 || isdigit(atoi(argv[1])) || isdigit(atoi(argv[2])) || isdigit(atoi(argv[3])) || isdigit(atoi(argv[4]))){
         ROS_INFO("Input Parameters are wrong!\nstart position:\nx\ny\ngoal position:\nx\ny");
         return 1;
     }
