@@ -1,0 +1,11 @@
+#goal definition
+geometry_msgs/PoseStamped goal
+std_msgs/Time start_time
+int32 resource_number
+byte priority
+---
+#result definition
+int32 travel_time
+---
+#feedback
+int32 travel_time
