@@ -151,6 +151,7 @@ add_executable(time_server src/server/time_server.cpp)
 add_executable(time_test src/tests/time_test.cpp)
 add_executable(collision_server src/server/collision_server.cpp)
 add_executable(collision_test src/tests/collision_test.cpp)
+add_executable(PTS_actionserver src/actionserver/PTS_actionserver.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -166,6 +167,8 @@ add_dependencies(time_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORT
 add_dependencies(time_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(collision_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(collision_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(PTS_actionserver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
@@ -186,6 +189,9 @@ target_link_libraries(collision_server
   ${catkin_LIBRARIES}
 )
 target_link_libraries(collision_test
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(PTS_actionserver
   ${catkin_LIBRARIES}
 )
 #############
