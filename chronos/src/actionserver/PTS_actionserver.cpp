@@ -250,7 +250,8 @@ std::vector<nav_msgs::Path> insertPath(nav_msgs::Path createdPath, std::vector<n
                     return plan;
                 }
             }
-            ROS_INFO("ERROR: path insertion found no correct place");
+            plan.push_back(createdPath);
+            //ROS_INFO("ERROR: path insertion found no correct place");
             return plan;
         }
 }
