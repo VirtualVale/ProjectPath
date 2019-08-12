@@ -9,6 +9,8 @@
 #include <geometry_msgs/Pose.h>
 
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
+nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
+
 
 class PTSAction
 {
@@ -50,7 +52,7 @@ public:
         //RESOURCE
         //Resources 1,2,3 are mapped to 0,1,2 for computation reasons
         int resource = (goal-> resource_number) - 1;
-        if(resource < 99)
+        if(resource > 99)
         {
             ROS_INFO("ERROR: Invalid resource number.");
             return false;
@@ -83,7 +85,8 @@ public:
                 start.position.y = 2;
                 break;
                 default:
-                ROS_INFO("Error: Invalid resource number");
+                ROS_INFO("Error: Start position for resource number not implemented");
+                return false;
             }
         } else {
             int pathId = pathAtTime(startTime, plan[resource]);
