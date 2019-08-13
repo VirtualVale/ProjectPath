@@ -7,6 +7,7 @@
 #include "chronos/collision_service.h"
 #include <chronos/PTSAction.h>
 #include <geometry_msgs/Pose.h>
+#include <iostream>
 
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
 nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
@@ -131,10 +132,9 @@ public:
         //check possible collisions with paths from bigger resource numbers
         for(int i=resource+1; i<99; i++)
         {
-            ROS_INFO("COLLISIONCHECKING: resource_nr %i", i);
             for(int j=0; j<plan[i].size(); j++)
             {
-                ROS_INFO("COLLISIONCHECKING: plan_nr %i", j);
+                ROS_INFO("COLLISIONCHECKING: plan_nr [%i], resource [%i]", j, i);
                 if(!plan[i].empty())
                 {
                     csrv.request.inferior = plan[i][j];
@@ -153,10 +153,9 @@ public:
         //check possible collision with paths with smaller resource numbers
         for(int i=resource-1; i>=0; i--)
         {
-            ROS_INFO("COLLISIONCHECKING: resource_nr %i", i);
             for(int j=0; j<plan[i].size(); j++)
             {
-                ROS_INFO("COLLISIONCHECKING: plan_nr %i", j);
+                ROS_INFO("COLLISIONCHECKING: plan_nr [%i], resource [%i]", j, i);
                 if(!plan[i].empty())
                 {
                     csrv.request.inferior = plan[i][j];
@@ -173,6 +172,10 @@ public:
         }
 
         //REACTION TO POSSIBLE COLLISIONS
+        std::string answer;
+        std::cout << "Should the path be added to the plan of the resource? (y/n)";
+        getline(std::cin, answer);
+        ROS_INFO("answer: %s", answer);
 
         //ADDING PATH TO PLAN
         plan[resource] = insertPath(createdPath, plan[resource]);
