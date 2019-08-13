@@ -69,7 +69,7 @@ public:
         //RESOURCE
         //Resources 1,2,3 are mapped to 0,1,2 for computation reasons
         int resource = (goal-> resource_number) - 1;
-        if(resource > 99)
+        if(resource > 99 || resource < 0)
         {
             ROS_INFO("ERROR: Invalid resource number.");
             return false;

@@ -30,10 +30,6 @@ class ScrollableTimeline(Plugin):
             print 'arguments: ', args
             print 'unknowns: ', unknowns
 
-        # client for pathCreation with actionserver
-        client = actionlib.SimpleActionClient('PTS_client', chronos.msg.PTSAction)
-        client.wait_for_server()
-
         # Create QWidget
         self._widget = QWidget()
 
@@ -72,8 +68,22 @@ class ScrollableTimeline(Plugin):
         self._send_time(0)
     
     def _on_button2_clicked(self):
-        self._widget.horizontalSlider.setValue(901)
-        self._send_time(0)
+        # client for pathCreation with actionserver
+        client = actionlib.SimpleActionClient('PTS', chronos.msg.PTSAction)
+        client.wait_for_server()
+        goal = chronos.msg.PTSGoal()
+        goal.goal.pose.position.x = self._widget.doubleSpinBox_2.value()
+        goal.goal.pose.position.y = self._widget.doubleSpinBox_3.value()
+        goal.start_time.data.secs = self._widget.spinBox_2.value()
+        goal.resource_number = self._widget.spinBox.value()
+        # Sends the goal to the action server.
+        client.send_goal(goal)
+
+        # Waits for the server to finish performing the action.
+        client.wait_for_result()
+
+        # Prints out the result of executing the action
+        return client.get_result()  # A FibonacciResult
 
     def on_parameter_changed(self):
         self._send_time(self._widget.horizontalSlider.value())

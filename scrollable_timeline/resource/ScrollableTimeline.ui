@@ -205,7 +205,11 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QTimeEdit" name="timeEdit"/>
+     <widget class="QSpinBox" name="spinBox_2">
+      <property name="maximum">
+       <number>200</number>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
