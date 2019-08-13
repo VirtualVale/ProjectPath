@@ -10,9 +10,16 @@
 
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
 nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
-int pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
+nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
 std::vector<nav_msgs::Path> insertPath(nav_msgs::Path path, std::vector<nav_msgs::Path> plan);
 
+ros::Time snapshot;
+
+void timeCallback(const std_msgs::Time::ConstPtr& msg)
+{
+    snapshot = ros::Time((*msg).data.toSec());
+    ROS_INFO("new time toSec %lf", snapshot.toSec());
+}
 
 class PTSAction
 {
@@ -33,6 +40,11 @@ protected:
     ros::ServiceClient time_client;
     ros::ServiceClient collision_client;
 
+    //Publisher for easy visualization TODO write independent visualization node for variable amount of robots
+    ros::Publisher r1_path_pub;
+    ros::Publisher r2_path_pub;
+    ros::Publisher r3_path_pub;
+
 public:
 
     PTSAction(std::string name) :
@@ -43,6 +55,9 @@ public:
         path_client = n.serviceClient<chronos::path_service>("path_service");
         time_client = n.serviceClient<chronos::time_service>("time_service");
         collision_client = n.serviceClient<chronos::collision_service>("collision_service"); 
+        r1_path_pub = n.advertise<nav_msgs::Path>("r1_path_f", 1000);
+        r2_path_pub = n.advertise<nav_msgs::Path>("r2_path_f", 1000);
+        r3_path_pub = n.advertise<nav_msgs::Path>("r3_path_f", 1000);
     }
 
     ~PTSAction(void)
@@ -64,6 +79,7 @@ public:
         ros::Time startTime = goal->start_time.data;
         if(occupiedBool(startTime, plan[resource])){
             ROS_INFO("ERROR: Resource is busy at this start time.");
+            as_.setAborted();
             return false;
         }
 
@@ -91,11 +107,12 @@ public:
                 return false;
             }
         } else {
-            int pathId = pathAtTime(startTime, plan[resource]);
+            nav_msgs::Path lastPath = pathAtTime(startTime, plan[resource]);
             //time is between zero time and last path
-            startPose.position.x = plan[resource][pathId].poses.back().pose.position.x;
-            startPose.position.y = plan[resource][pathId].poses.back().pose.position.y;
+            startPose.position.x = lastPath.poses.back().pose.position.x;
+            startPose.position.y = lastPath.poses.back().pose.position.y;
         }
+        ROS_INFO("PATHCREATION: resources: start position x [%.2lf] y [%.2lf]", startPose.position.x, startPose.position.y);
 
         //GOAL POSITION
         geometry_msgs::Pose goalPose;
@@ -114,17 +131,21 @@ public:
         //check possible collisions with paths from bigger resource numbers
         for(int i=resource+1; i<99; i++)
         {
+            ROS_INFO("COLLISIONCHECKING: resource_nr %i", i);
             for(int j=0; j<plan[i].size(); j++)
             {
-                if(plan[i].empty())break;
-                csrv.request.inferior = plan[i][j];
-                if(collision_client.call(csrv))
+                ROS_INFO("COLLISIONCHECKING: plan_nr %i", j);
+                if(!plan[i].empty())
                 {
-                    ROS_INFO("Collisions #: %lu", csrv.response.collisionTimes.data.size());
-                }
-                else
-                {
-                    ROS_INFO("ERROR: Collisionchecking failed.");
+                    csrv.request.inferior = plan[i][j];
+                    if(collision_client.call(csrv))
+                    {
+                        ROS_INFO("Collisions #: %lu", csrv.response.collisionTimes.data.size());
+                    }
+                    else
+                    {
+                        ROS_INFO("ERROR: Collisionchecking failed.");
+                    }
                 }
             }
         }
@@ -132,17 +153,21 @@ public:
         //check possible collision with paths with smaller resource numbers
         for(int i=resource-1; i>=0; i--)
         {
+            ROS_INFO("COLLISIONCHECKING: resource_nr %i", i);
             for(int j=0; j<plan[i].size(); j++)
             {
-                if(plan[i].empty())break;
-                csrv.request.inferior = plan[i][j];
-                if(collision_client.call(csrv))
+                ROS_INFO("COLLISIONCHECKING: plan_nr %i", j);
+                if(!plan[i].empty())
                 {
-                    ROS_INFO("Collisions #: %lu", csrv.response.collisionTimes.data.size());
-                }
-                else
-                {
-                    ROS_INFO("ERROR: Collisionchecking failed.");
+                    csrv.request.inferior = plan[i][j];
+                    if(collision_client.call(csrv))
+                    {
+                        ROS_INFO("Collisions #: %lu", csrv.response.collisionTimes.data.size());
+                    }
+                    else
+                    {
+                        ROS_INFO("ERROR: Collisionchecking failed.");
+                    }
                 }
             }
         }
@@ -152,20 +177,65 @@ public:
         //ADDING PATH TO PLAN
         plan[resource] = insertPath(createdPath, plan[resource]);
 
-
+        result_.path = createdPath;
         as_.setSucceeded(result_);
         return true;
     }
+
+    //temporarily time path visualizer
+    void publishPlan()
+    {
+        if(!plan[0].empty())
+        {
+            r1_path_pub.publish(pathAtTime(snapshot, plan[0]));
+        }
+    }
 };
+
+
+
+
+
+
+
+
+
 
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "PTS");
     PTSAction PTS("PTS");
     ros::NodeHandle n;
-    ros::spin();
+    ros::Subscriber sub = n.subscribe("timer", 1000, timeCallback);
+    while (ros::ok())
+    {
+        PTS.publishPlan();
+        ros::spinOnce();
+    }
+    
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //calculates if a timestamp lies within a already registered path
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan)
@@ -181,21 +251,21 @@ bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan)
 }
 
 //returns the Id of the path the translated timestamp lies within
-int pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan)
+nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan)
 {
-   int pathID = 0;
+   nav_msgs::Path searchedPath;
    double diff, optDiff = 100.00;
    for(int i=0; i<plan.size(); ++i){
      for(int j=0; j<plan[i].poses.size(); ++j){
        diff = abs(currentTime.toSec() - plan[i].poses[j].header.stamp.toSec());
        if(diff < optDiff){
          optDiff = diff;
-         pathID = i;
+         searchedPath = plan[i];
        }
      }
      //ROS_INFO("for-Loop(currentPath) i = %i, optDiff = %lf, diff = %lf, pathID = %i", i, optDiff, diff, pathID);
    }
-   return pathID;
+   return searchedPath;
 }
 
 //pathplanning and timestamping, RETURN the plan
@@ -221,7 +291,7 @@ nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, 
     //time service call
     chronos::time_service tsrv;
     tsrv.request.path = psrv.response.path;
-    tsrv.request.path.poses.front().header.stamp = startTime;
+    tsrv.request.startTime = startTime.toSec();
     tsrv.request.average_velocity = 0.5;
     if(time_client.call(tsrv)){
       ROS_INFO("start time: %.2lf, end time: %.2lf", tsrv.response.path_timestamped.poses.front().header.stamp.toSec(), tsrv.response.path_timestamped.poses.back().header.stamp.toSec());

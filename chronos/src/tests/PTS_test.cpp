@@ -15,11 +15,13 @@ void goalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
     ROS_INFO("Action server started, sending goal.");
     // send a goal to the action
     chronos::PTSGoal goal;
-    goal.resource_number = 1;
+    goal.resource_number = (*msg).header.seq;
+    ROS_INFO("resource_number -> seq %i", (*msg).header.seq);
     goal.goal.pose.position.x = (*msg).pose.position.x;
     goal.goal.pose.position.y = (*msg).pose.position.y;
     goal.start_time.data = (*msg).header.stamp;
 
+    ROS_INFO("start time: %lf , %lf", goal.start_time.data.toSec(), (*msg).header.stamp.toSec());
     ac.sendGoal(goal);
 
     //wait for the action to return

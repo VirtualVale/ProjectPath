@@ -1,6 +1,8 @@
 import os
 import rospy
 import rospkg
+import actionlib
+import chronos.msg
 
 from std_msgs.msg import Time
 from qt_gui.plugin import Plugin
@@ -28,6 +30,10 @@ class ScrollableTimeline(Plugin):
             print 'arguments: ', args
             print 'unknowns: ', unknowns
 
+        # client for pathCreation with actionserver
+        client = actionlib.SimpleActionClient('PTS_client', chronos.msg.PTSAction)
+        client.wait_for_server()
+
         # Create QWidget
         self._widget = QWidget()
 
@@ -52,6 +58,7 @@ class ScrollableTimeline(Plugin):
         self._widget.pushButton.clicked.connect(self._on_button_clicked)
         self._widget.horizontalSlider.valueChanged.connect(self._on_slider_changed)
         self._widget.doubleSpinBox.valueChanged.connect(self._on_spinbox_changed)
+        self._widget.pushButton_2.clicked.connect(self._on_button2_clicked)
 
     def _on_spinbox_changed(self):
         self._send_time(self._widget.doubleSpinBox.value())
@@ -61,6 +68,10 @@ class ScrollableTimeline(Plugin):
         self.on_parameter_changed()
 
     def _on_button_clicked(self):
+        self._widget.horizontalSlider.setValue(901)
+        self._send_time(0)
+    
+    def _on_button2_clicked(self):
         self._widget.horizontalSlider.setValue(901)
         self._send_time(0)
 
