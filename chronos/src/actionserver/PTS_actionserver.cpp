@@ -8,19 +8,14 @@
 #include <chronos/PTSAction.h>
 #include <geometry_msgs/Pose.h>
 #include <iostream>
+#include "chronos/visualization.h"
+
+
 
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
 nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
 nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
 std::vector<nav_msgs::Path> insertPath(nav_msgs::Path path, std::vector<nav_msgs::Path> plan);
-
-ros::Time snapshot;
-
-void timeCallback(const std_msgs::Time::ConstPtr& msg)
-{
-    snapshot = ros::Time((*msg).data.toSec());
-    ROS_INFO("new time toSec %lf", snapshot.toSec());
-}
 
 class PTSAction
 {
@@ -41,10 +36,9 @@ protected:
     ros::ServiceClient time_client;
     ros::ServiceClient collision_client;
 
-    //Publisher for easy visualization TODO write independent visualization node for variable amount of robots
-    ros::Publisher r1_path_pub;
-    ros::Publisher r2_path_pub;
-    ros::Publisher r3_path_pub;
+    //plan publisher
+    ros::Publisher plan_pub;
+    
 
 public:
 
@@ -56,9 +50,8 @@ public:
         path_client = n.serviceClient<chronos::path_service>("path_service");
         time_client = n.serviceClient<chronos::time_service>("time_service");
         collision_client = n.serviceClient<chronos::collision_service>("collision_service"); 
-        r1_path_pub = n.advertise<nav_msgs::Path>("r1_path_f", 1000);
-        r2_path_pub = n.advertise<nav_msgs::Path>("r2_path_f", 1000);
-        r3_path_pub = n.advertise<nav_msgs::Path>("r3_path_f", 1000);
+
+        plan_pub = n.advertise<chronos::visualization>("plan", 1000);
     }
 
     ~PTSAction(void)
@@ -172,26 +165,27 @@ public:
         }
 
         //REACTION TO POSSIBLE COLLISIONS
-        std::string answer;
+        char answer;
         std::cout << "Should the path be added to the plan of the resource? (y/n)";
-        getline(std::cin, answer);
-        ROS_INFO("answer: %s", answer);
-
-        //ADDING PATH TO PLAN
-        plan[resource] = insertPath(createdPath, plan[resource]);
-
-        result_.path = createdPath;
-        as_.setSucceeded(result_);
-        return true;
-    }
-
-    //temporarily time path visualizer
-    void publishPlan()
-    {
-        if(!plan[0].empty())
+        std::cin >> answer;
+        if(answer == 'y')
         {
-            r1_path_pub.publish(pathAtTime(snapshot, plan[0]));
+            //ADDING PATH TO PLAN
+            plan[resource] = insertPath(createdPath, plan[resource]);
+            ROS_INFO("Plan added.");
+
+            chronos::visualization visu;
+            visu.resource_number = resource;
+            visu.resource_plan = plan[resource];
+            plan_pub.publish(visu);
+
+            result_.path = createdPath;
+            as_.setSucceeded(result_);
+            return true;
         }
+
+        as_.setAborted();
+        return true;
     }
 };
 
@@ -209,10 +203,8 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "PTS");
     PTSAction PTS("PTS");
     ros::NodeHandle n;
-    ros::Subscriber sub = n.subscribe("timer", 1000, timeCallback);
     while (ros::ok())
     {
-        PTS.publishPlan();
         ros::spinOnce();
     }
     
