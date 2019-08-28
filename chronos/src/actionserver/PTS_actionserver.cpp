@@ -80,7 +80,7 @@ public:
         //START POSITION DETERMINATION
         geometry_msgs::Pose startPose; 
 
-        if(plan[resource].size() == 0 || startTime < plan[resource].front().header.stamp) // no paths registered
+        if(plan[resource].size() == 0 || startTime < plan[resource].front().header.stamp) // no paths registered or path is before first path
         {
             switch (resource)
             {
@@ -179,7 +179,15 @@ public:
             visu.resource_plan = plan[resource];
             plan_pub.publish(visu);
 
-            result_.path = createdPath;
+            ROS_INFO("plan:");
+            for(int i=0; i<3; i++){
+                ROS_INFO("Resource %i:", i);
+                for(int j=0; j<plan[i].size(); j++){
+                    ROS_INFO("plan %i, start [%.2lf][%.2lf], goal [%.2lf][%.2lf]", j, plan[i][j].poses.front().pose.position.x, plan[i][j].poses.front().pose.position.y, plan[i][j].poses.back().pose.position.x, plan[i][j].poses.back().pose.position.y);
+                }
+            }
+
+            result_.travel_time = abs(createdPath.poses.front().header.stamp.toSec() - createdPath.poses.back().header.stamp.toSec());
             as_.setSucceeded(result_);
             return true;
         }
@@ -188,14 +196,6 @@ public:
         return true;
     }
 };
-
-
-
-
-
-
-
-
 
 
 int main(int argc, char *argv[])
@@ -210,26 +210,6 @@ int main(int argc, char *argv[])
     
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //calculates if a timestamp lies within a already registered path
@@ -312,6 +292,7 @@ std::vector<nav_msgs::Path> insertPath(nav_msgs::Path createdPath, std::vector<n
                 if(plan[i].poses.front().header.stamp > createdPath.poses.front().header.stamp)
                 {
                     plan.insert(it+i, createdPath);
+                    ROS_INFO("Path inserted at %i, pointer at %i th path", i, i+1);
                     return plan;
                 }
             }
