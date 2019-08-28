@@ -13,9 +13,9 @@
 
 
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
-nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
+nav_msgs::Path createPath( geometry_msgs::PoseStamped start, geometry_msgs::PoseStamped goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
 nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
-std::vector<nav_msgs::Path> insertPath(nav_msgs::Path path, std::vector<nav_msgs::Path> plan);
+std::vector<nav_msgs::Path> insertPath(nav_msgs::Path path, std::vector<nav_msgs::Path> plan, ros::ServiceClient path_client, ros::ServiceClient time_client);
 
 class PTSAction
 {
@@ -78,23 +78,23 @@ public:
         }
 
         //START POSITION DETERMINATION
-        geometry_msgs::Pose startPose; 
+        geometry_msgs::PoseStamped startPose; 
 
         if(plan[resource].size() == 0 || startTime < plan[resource].front().header.stamp) // no paths registered or path is before first path
         {
             switch (resource)
             {
                 case 0:
-                startPose.position.x = 0;
-                startPose.position.y = 0;
+                startPose.pose.position.x = 0;
+                startPose.pose.position.y = 0;
                 break;
                 case 1:
-                startPose.position.x = 0;
-                startPose.position.y = 1;
+                startPose.pose.position.x = 0;
+                startPose.pose.position.y = 1;
                 break;
                 case 2:
-                startPose.position.x = 0;
-                startPose.position.y = 2;
+                startPose.pose.position.x = 0;
+                startPose.pose.position.y = 2;
                 break;
                 default:
                 ROS_INFO("Error: Start position for resource number not implemented");
@@ -103,15 +103,15 @@ public:
         } else {
             nav_msgs::Path lastPath = pathAtTime(startTime, plan[resource]);
             //time is between zero time and last path
-            startPose.position.x = lastPath.poses.back().pose.position.x;
-            startPose.position.y = lastPath.poses.back().pose.position.y;
+            startPose.pose.position.x = lastPath.poses.back().pose.position.x;
+            startPose.pose.position.y = lastPath.poses.back().pose.position.y;
         }
-        ROS_INFO("PATHCREATION: resources: start position x [%.2lf] y [%.2lf]", startPose.position.x, startPose.position.y);
+        ROS_INFO("PATHCREATION: resources: start position x [%.2lf] y [%.2lf]", startPose.pose.position.x, startPose.pose.position.y);
 
         //GOAL POSITION
-        geometry_msgs::Pose goalPose;
-        goalPose.position.x = goal->goal.pose.position.x;
-        goalPose.position.y = goal->goal.pose.position.y;
+        geometry_msgs::PoseStamped goalPose;
+        goalPose.pose.position.x = goal->goal.pose.position.x;
+        goalPose.pose.position.y = goal->goal.pose.position.y;
         //TODO check the input
 
         //PATHCREATION
@@ -171,7 +171,7 @@ public:
         if(answer == 'y')
         {
             //ADDING PATH TO PLAN
-            plan[resource] = insertPath(createdPath, plan[resource]);
+            plan[resource] = insertPath(createdPath, plan[resource], path_client, time_client);
             ROS_INFO("Plan added.");
 
             chronos::visualization visu;
@@ -244,17 +244,17 @@ nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> pla
 }
 
 //pathplanning and timestamping, RETURN the plan
-nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client)
+nav_msgs::Path createPath( geometry_msgs::PoseStamped start, geometry_msgs::PoseStamped goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client)
 {
     //path service call
     chronos::path_service psrv;
     psrv.request.start.header.frame_id = "map";
-    psrv.request.start.pose.position.x = start.position.x;
-    psrv.request.start.pose.position.y = start.position.y;
+    psrv.request.start.pose.position.x = start.pose.position.x;
+    psrv.request.start.pose.position.y = start.pose.position.y;
     psrv.request.start.pose.orientation.w = 1.0;
     psrv.request.goal.header.frame_id = "map";
-    psrv.request.goal.pose.position.x = goal.position.x;
-    psrv.request.goal.pose.position.y = goal.position.y;
+    psrv.request.goal.pose.position.x = goal.pose.position.x;
+    psrv.request.goal.pose.position.y = goal.pose.position.y;
     psrv.request.goal.pose.orientation.w = 1.0;
     if(path_client.call(psrv))
     {
@@ -277,7 +277,7 @@ nav_msgs::Path createPath( geometry_msgs::Pose start, geometry_msgs::Pose goal, 
     return tsrv.response.path_timestamped;
 }
 
-std::vector<nav_msgs::Path> insertPath(nav_msgs::Path createdPath, std::vector<nav_msgs::Path> plan)
+std::vector<nav_msgs::Path> insertPath(nav_msgs::Path createdPath, std::vector<nav_msgs::Path> plan, ros::ServiceClient path_client, ros::ServiceClient time_client)
 {
         if(plan.empty())
         {
@@ -293,6 +293,8 @@ std::vector<nav_msgs::Path> insertPath(nav_msgs::Path createdPath, std::vector<n
                 {
                     plan.insert(it+i, createdPath);
                     ROS_INFO("Path inserted at %i, pointer at %i th path", i, i+1);
+                    nav_msgs::Path successor = createPath(createdPath.poses.back(), plan[i+1].poses.back(), plan[i+1].poses.front().header.stamp, path_client, time_client);
+                    plan[i+1] = successor;
                     return plan;
                 }
             }
