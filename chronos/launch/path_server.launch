@@ -7,12 +7,10 @@
   -->
   <param name="/use_sim_time" value="true"/>
 
-<group ns = "tb3_1">
   <!-- Run the costmap node -->
   <node name="path_server" pkg="chronos" type="path_server" output="screen" >
     <rosparam file="$(find chronos)/cfg/costmap_example.yaml" command="load" ns="costmap" />
   </node>
-</group>
   
 
 </launch>
