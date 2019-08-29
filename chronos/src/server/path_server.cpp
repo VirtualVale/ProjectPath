@@ -7,17 +7,17 @@
 bool createPath(chronos::path_service::Request &req, chronos::path_service::Response &res)
 {
     std::vector<geometry_msgs::PoseStamped> plan;
-
+    ROS_INFO("first step before costmap");
     //costmap
     tf::TransformListener tf(ros::Duration(10));
     costmap_2d::Costmap2DROS costmap ("costmap", tf);
     costmap.start();    
-
+    ROS_INFO("second step after costmap");
     //global planner - navfn
     navfn::NavfnROS navfn;
     navfn.initialize("my_nafvn_planner", &costmap); 
     navfn.makePlan(req.start, req.goal, plan);
-
+    ROS_INFO("third step after navfn");
     //response 
     //poses is calculated plan
     res.path.poses = plan;
