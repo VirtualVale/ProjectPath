@@ -25,7 +25,9 @@ int main(int argc, char *argv[])
     ros::Duration d(1.0);
 
       //tell the action client that we want to spin a thread by default
-  MoveBaseClient ac("tb3_1/move_base", true);
+  MoveBaseClient ac("tb3_0/move_base", true);
+  MoveBaseClient ac1("tb3_1/move_base", true);
+  MoveBaseClient ac2("tb3_2/move_base", true);
 
   //wait for the action server to come up
   while(!ac.waitForServer(ros::Duration(5.0))){
@@ -46,22 +48,38 @@ int main(int argc, char *argv[])
                     ROS_INFO("Send resource %i on plan %i at time %i", i, j, time.sec);
                     goal.target_pose.header.frame_id = "map";
                     goal.target_pose.header.stamp = ros::Time::now();
-                    //Moving to the start position
-                    goal.target_pose.pose.position.x = 2.0;
-                    goal.target_pose.pose.position.y = 2.0;
+                    //Moving to the goal position
+                    goal.target_pose.pose.position.x = plan[i][j].poses.back().pose.position.x;
+                    goal.target_pose.pose.position.y = plan[i][j].poses.back().pose.position.y;
                     goal.target_pose.pose.orientation.z = 0.0;
                     goal.target_pose.pose.orientation.w = 1.0;
 
-                    ROS_INFO("moving to the start position");
-                    ac.sendGoal(goal);
-                    
-                    ac.waitForResult();
+                    ROS_INFO("moving to the goal position");
 
+                    switch (i)
+                    {
+                        case 0:
+                            ac.sendGoal(goal);
+                            break;
+                        case 1:
+                            ac1.sendGoal(goal);
+                            break;
+                        case 2:
+                            ac2.sendGoal(goal);
+                            break;
+                        default:
+                            /* Default Code */
+                            ac.sendGoal(goal);
+                    }
+                    
+                    /*
+                    ac.waitForResult();
+                    
                     if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-                        ROS_INFO("Start reached!");
+                        ROS_INFO("goal reached!");
                     else
                         ROS_INFO("The base failed to move forward 1 meter for some reason");
-                    
+                    */
                     d.sleep();
                 }
             }

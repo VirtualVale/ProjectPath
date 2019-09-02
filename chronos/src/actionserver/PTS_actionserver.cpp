@@ -68,6 +68,7 @@ public:
             ROS_INFO("ERROR: Invalid resource number.");
             return false;
         }
+        ROS_INFO("resource [%i]", resource);
 
         //START TIME
         ros::Time startTime = goal->start_time.data;
@@ -76,6 +77,7 @@ public:
             as_.setAborted();
             return false;
         }
+        ROS_INFO("start time [%.2lf]", startTime.toSec());
 
         //START POSITION DETERMINATION
         geometry_msgs::PoseStamped startPose; 
@@ -106,17 +108,19 @@ public:
             startPose.pose.position.x = lastPath.poses.back().pose.position.x;
             startPose.pose.position.y = lastPath.poses.back().pose.position.y;
         }
-        ROS_INFO("PATHCREATION: resources: start position x [%.2lf] y [%.2lf]", startPose.pose.position.x, startPose.pose.position.y);
+        ROS_INFO("start x [%.2lf] y [%.2lf]", startPose.pose.position.x, startPose.pose.position.y);
 
         //GOAL POSITION
         geometry_msgs::PoseStamped goalPose;
         goalPose.pose.position.x = goal->goal.pose.position.x;
         goalPose.pose.position.y = goal->goal.pose.position.y;
         //TODO check the input
+        ROS_INFO("goal x [%.2lf] y [%.2lf]", goalPose.pose.position.x, goalPose.pose.position.y);
 
         //PATHCREATION
         nav_msgs::Path createdPath;
         createdPath = createPath(startPose, goalPose, startTime, path_client, time_client);
+        ROS_INFO("goal time [%.2lf]", createdPath.poses.back().header.stamp.toSec());
         
         //COLLISIONCHECKING
         chronos::collision_service csrv;
@@ -229,7 +233,7 @@ bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan)
 nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan)
 {
    nav_msgs::Path searchedPath;
-   double diff, optDiff = 100.00;
+   double diff, optDiff = 100000.00;
    for(int i=0; i<plan.size(); ++i){
      for(int j=0; j<plan[i].poses.size(); ++j){
        diff = abs(currentTime.toSec() - plan[i].poses[j].header.stamp.toSec());
