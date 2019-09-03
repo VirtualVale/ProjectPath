@@ -8,7 +8,22 @@ from std_msgs.msg import Time
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget, QPushButton, QDoubleSpinBox
+from PyQt5.QtCore import QDateTime, Qt
 
+class MyQWidget(QWidget):
+    def __init__(self):
+        super(MyQWidget, self).__init__()
+        # all gui elements are now accessed through self.ui
+        self._x = 0.0
+        self._y = 0.0
+
+    def mousePressEvent(self, event):
+        print("wtf")
+        self._x = (event.x()-466)*0.05
+        self._y = (event.y()-356)*-0.05
+        print((event.x()-466)*0.05)
+        print(((event.y()-356)*-1)*0.05)
+        print(event.pos())
 
 
 class ScrollableTimeline(Plugin):
@@ -31,8 +46,9 @@ class ScrollableTimeline(Plugin):
             print 'unknowns: ', unknowns
 
         # Create QWidget
-        self._widget = QWidget()
-
+        self._x = 0.0
+        self._y = 0.0
+        self._widget = MyQWidget()
         # Get path to UI file which should be in the "resource" folder of this package
         ui_file = os.path.join(rospkg.RosPack().get_path('scrollable_timeline'), 'resource', 'ScrollableTimeline.ui')
         # Extend the widget with all attributes and children from UI file
@@ -49,33 +65,41 @@ class ScrollableTimeline(Plugin):
         # Add widget to the user interface
         context.add_widget(self._widget)
 
+        self._widget.startTime_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        self._widget.input_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        self._widget.display_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        #self._widget.time_slider.setSliderPosition(QDateTime.currentMSecsSinceEpoch())
+        
         self._publisher = rospy.Publisher("timer", Time, queue_size=100)
 
-        self._widget.pushButton.clicked.connect(self._on_button_clicked)
-        self._widget.horizontalSlider.valueChanged.connect(self._on_slider_changed)
-        self._widget.doubleSpinBox.valueChanged.connect(self._on_spinbox_changed)
-        self._widget.pushButton_2.clicked.connect(self._on_button2_clicked)
+        self._widget.currentTime_button.clicked.connect(self._on_currentTime_button_clicked)
+        self._widget.time_slider.valueChanged.connect(self._on_time_slider_changed)
+        self._widget.goal_pushButton.clicked.connect(self._on_goal_button_clicked)
 
-    def _on_spinbox_changed(self):
-        self._send_time(self._widget.doubleSpinBox.value())
 
-    def _on_slider_changed(self):
-        self._widget.doubleSpinBox.setValue(self._widget.horizontalSlider.value()*0.1)
-        self.on_parameter_changed()
+    def _on_time_slider_changed(self):
+        self._widget.display_dateTimeEdit.setDateTime(QDateTime.fromMSecsSinceEpoch(QDateTime.currentMSecsSinceEpoch() + self._widget.time_slider.value()*1000))
+        #self.on_parameter_changed()
 
-    def _on_button_clicked(self):
-        self._widget.horizontalSlider.setValue(901)
-        self._send_time(0)
+    def _on_currentTime_button_clicked(self):
+        self._widget.position_x_doubleSpinBox.setValue(self._widget._x)
+        self._widget.position_y_doubleSpinBox.setValue(self._widget._y)
+        self._widget.input_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        self._widget.display_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        print(QDateTime.currentMSecsSinceEpoch() + 2592000000)
+        print(QDateTime.currentMSecsSinceEpoch() - 2592000000)
+        #self._widget.time_slider.setValue(rospy.get_rostime())
+
     
-    def _on_button2_clicked(self):
+    def _on_goal_button_clicked(self):
         # client for pathCreation with actionserver
         client = actionlib.SimpleActionClient('PTS', chronos.msg.PTSAction)
         # client.wait_for_server()
         goal = chronos.msg.PTSGoal()
-        goal.goal.pose.position.x = self._widget.doubleSpinBox_2.value()
-        goal.goal.pose.position.y = self._widget.doubleSpinBox_3.value()
-        goal.start_time.data.secs = self._widget.spinBox_2.value()
-        goal.resource_number = self._widget.spinBox.value()
+        goal.goal.pose.position.x = self._widget.position_x_doubleSpinBox.value()
+        goal.goal.pose.position.y = self._widget.position_y_doubleSpinBox.value()
+        goal.start_time.data.secs = self._widget.start_time_spinBox.value()
+        goal.resource_number = self._widget.resource_spinBox.value()
         # Sends the goal to the action server.
         client.send_goal(goal)
 
@@ -86,11 +110,13 @@ class ScrollableTimeline(Plugin):
         return client.get_result()  # A FibonacciResult
 
     def on_parameter_changed(self):
-        self._send_time(self._widget.horizontalSlider.value())
+        self._send_time(self._widget.time_slider.value())
     
     def _send_time(self, time):
         time = rospy.Time(time*0.1)
         self._publisher.publish(time)
+        
+
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
