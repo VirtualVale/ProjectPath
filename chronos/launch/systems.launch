@@ -1,0 +1,5 @@
+<launch>
+    <node name="PTS_actionserver" pkg="chronos" type="PTS_actionserver" output="screen" />
+    <node name="visualization" pkg="chronos" type="visualization" output="screen" />
+    <node name="path_execution" pkg="chronos" type="path_execution" output="screen" />
+</launch>

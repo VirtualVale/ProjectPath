@@ -18,7 +18,7 @@ class MyQWidget(QWidget):
         self._y = 0.0
 
     def mousePressEvent(self, event):
-        print("wtf")
+        print("new goal coordinates")
         self._x = (event.x()-466)*0.05
         self._y = (event.y()-356)*-0.05
         print((event.x()-466)*0.05)
@@ -98,7 +98,7 @@ class ScrollableTimeline(Plugin):
         goal = chronos.msg.PTSGoal()
         goal.goal.pose.position.x = self._widget.position_x_doubleSpinBox.value()
         goal.goal.pose.position.y = self._widget.position_y_doubleSpinBox.value()
-        goal.start_time.data.secs = self._widget.start_time_spinBox.value()
+        goal.start_time.data = rospy.get_rostime() + rospy.Duration(0.001 *(QDateTime.currentMSecsSinceEpoch() - self._widget.startTime_dateTimeEdit.dateTime().toMSecsSinceEpoch()))
         goal.resource_number = self._widget.resource_spinBox.value()
         # Sends the goal to the action server.
         client.send_goal(goal)
