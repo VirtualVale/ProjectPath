@@ -65,6 +65,9 @@ class ScrollableTimeline(Plugin):
         # Add widget to the user interface
         context.add_widget(self._widget)
 
+        #anchor for the time calculation // time point of system start in unix format (msecs)
+        origin_time = QDateTime.currentMSecsSinceEpoch()-rospy.get_rostime().to_sec()*1000
+
         self._widget.startTime_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.input_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.display_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
@@ -75,19 +78,26 @@ class ScrollableTimeline(Plugin):
         self._widget.currentTime_button.clicked.connect(self._on_currentTime_button_clicked)
         self._widget.time_slider.valueChanged.connect(self._on_time_slider_changed)
         self._widget.goal_pushButton.clicked.connect(self._on_goal_button_clicked)
+        self._widget.display_dateTimeEdit.dateTimeChanged.connect(self._on_display_dateTimeEdit_changed)
+        self._widget.input_dateTimeEdit.dateTimeChanged.connect(self._on_time_slider_changed)
+        self._widget.refresh_pushButton.clicked.connect(self._on_refresh_button_clicked)
 
-
-    def _on_time_slider_changed(self):
-        self._widget.display_dateTimeEdit.setDateTime(QDateTime.fromMSecsSinceEpoch(QDateTime.currentMSecsSinceEpoch() + self._widget.time_slider.value()*1000))
-        #self.on_parameter_changed()
-
-    def _on_currentTime_button_clicked(self):
+    def _on_refresh_button_clicked(self):
         self._widget.position_x_doubleSpinBox.setValue(self._widget._x)
         self._widget.position_y_doubleSpinBox.setValue(self._widget._y)
+
+    def _on_display_dateTimeEdit_changed(self):
+        ROSTimeInMsecs = self._widget.display_dateTimeEdit.dateTime().toMSecsSinceEpoch() - (QDateTime.currentMSecsSinceEpoch()-rospy.get_rostime().to_sec()*1000)
+        self._send_time(ROSTimeInMsecs*0.001)
+
+    def _on_time_slider_changed(self):
+        self._widget.display_dateTimeEdit.setDateTime(QDateTime.fromMSecsSinceEpoch(self._widget.input_dateTimeEdit.dateTime().toMSecsSinceEpoch() + self._widget.time_slider.value()*1000))
+        #self._send_time()
+
+    def _on_currentTime_button_clicked(self):
         self._widget.input_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.display_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
-        print(QDateTime.currentMSecsSinceEpoch() + 2592000000)
-        print(QDateTime.currentMSecsSinceEpoch() - 2592000000)
+        print(rospy.get_rostime().to_sec())
         #self._widget.time_slider.setValue(rospy.get_rostime())
 
     
@@ -98,7 +108,8 @@ class ScrollableTimeline(Plugin):
         goal = chronos.msg.PTSGoal()
         goal.goal.pose.position.x = self._widget.position_x_doubleSpinBox.value()
         goal.goal.pose.position.y = self._widget.position_y_doubleSpinBox.value()
-        goal.start_time.data = rospy.get_rostime() + rospy.Duration(0.001 *(QDateTime.currentMSecsSinceEpoch() - self._widget.startTime_dateTimeEdit.dateTime().toMSecsSinceEpoch()))
+        ROSTimeInMsecs = self._widget.startTime_dateTimeEdit.dateTime().toMSecsSinceEpoch() - (QDateTime.currentMSecsSinceEpoch()-rospy.get_rostime().to_sec()*1000)
+        goal.start_time.data = rospy.Time(ROSTimeInMsecs*0.001)
         goal.resource_number = self._widget.resource_spinBox.value()
         # Sends the goal to the action server.
         client.send_goal(goal)
@@ -113,7 +124,11 @@ class ScrollableTimeline(Plugin):
         self._send_time(self._widget.time_slider.value())
     
     def _send_time(self, time):
-        time = rospy.Time(time*0.1)
+        if time<0:
+            time=rospy.Time(0)
+        else:
+            time = rospy.Time(time)
+
         self._publisher.publish(time)
         
 
