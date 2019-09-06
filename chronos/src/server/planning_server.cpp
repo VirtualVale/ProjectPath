@@ -79,14 +79,13 @@ class path_database
             std::cin >> answer;
             if(answer == 'y')
             {
-                if(insertPath(resource_min, path_shortest)//TODO add insertPath as bool
-
-
-
-                
-            
-
-
+                if(insertPath(plan[resource_min], path_shortest)
+                {
+                    ROS_INFO("Path inserted.");
+                } else {
+                    ROS_INFO("Path insertion failed.");
+                }
+            }
         }
 
         //pathcreation gives back the time the resource needs to execute the job
@@ -117,11 +116,47 @@ class path_database
             return ac.getResult();
         }
 
-        //
+        bool deletePath(int resource_id, ros::Time start_time)
+        {
+            int diff_min = 100000;
+            int path_id;
+            for(int i=0; i<plan[resource_id]; i++)
+            {
+                int diff = abs(plan[i].poses.header.stamp.toSec()-start_time);
+                if(diff < diff_min)
+                {
+                    diff_min = diff;
+                    path_id = i;
+                }
+            }
+            //deletewithErase ?
+        }
 
-    
+        bool updateTimeAtPath()
 
-
+        bool insertPath(std::vector<nav_msgs::Path> plan, nav_msgs::Path createdPath)
+        {
+            if(plan.empty())
+            {
+                plan.push_back(createdPath);
+                return true;
+            } else {
+                std::vector<nav_msgs::Path>::iterator it = plan.begin();
+            for(int i=0; i<plan.size(); i++)
+            {
+                if(plan[i].poses.front().header.stamp > createdPath.poses.front().header.stamp)
+                {
+                    plan.insert(it+i, createdPath);
+                    ROS_INFO("Path inserted at %i, pointer at %i th path", i, i+1);
+                    nav_msgs::Path successor = createPath(createdPath.poses.back(), plan[i+1].poses.back(), plan[i+1].poses.front().header.stamp, path_client, time_client);
+                    plan[i+1] = successor;
+                    return true;
+                }
+            }
+            plan.push_back(createdPath);
+            return true;
+            }
+        }
 };
 
 
