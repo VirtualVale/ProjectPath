@@ -132,8 +132,6 @@ class path_database
             //deletewithErase ?
         }
 
-        bool updateTimeAtPath()
-
         bool insertPath(std::vector<nav_msgs::Path> plan, nav_msgs::Path createdPath)
         {
             if(plan.empty())
@@ -157,21 +155,71 @@ class path_database
             return true;
             }
         }
+
+        bool getPath(int resource_id, ros::Time start_time)
+        {
+            //todo implement function similar to pathAtTime
+        }
+
+        bool updateTimeAtPath(int resource_id, ros::Time old_start_time, ros::Time new_start_time)
+        {
+            //todo implement function with the time_client
+        }
+
+        bool updateStartAtPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped new_start)
+        {
+            //todo implement with just a new path with createPath
+        }
+
+        bool updateGoalAtPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped new_goal)
+        {
+            //todo implement with createPath and replace the old path
+        }
+
 };
 
 
 bool createJob(chronos::createJob_planning_service::Request &req, chronos::createJob_planning_service::Response &res)
 {
-
     return true;
 }
+
+bool createPath(chronos::createPath_planning_service::Request &req, chronos::createPath_planning_service::Response &res)
+{
+    return true;
+}
+
+bool deletePath(chronos::deletePath_planning_service::Request &req, chronos::deletePath_planning_service::Response &res)
+{
+    return true;
+}
+
+bool getPath(chronos::getPath_planning_service::Request &req, chronos::getPath_planning_service::Response &res)
+{
+    return true;
+}
+
+bool updateGoal(chronos::updateGoal_planning_service::Request &req, chronos::updateGoal_planning_service::Response &res)
+{
+    return true;
+}
+
+bool updateTime(chronos::updateTime_planning_service::Request &req, chronos::updateTime_planning_service::Response &res)
+{
+    return true;
+}
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "planning_server");
     ros::NodeHandle n;
 
-    ros::ServiceServer service = n.advertiseService("createJob_planning_service", createJob);
-    ROS_INFO("Ready to add a path to the plan.");
+    ros::ServiceServer createJob_planning_service = n.advertiseService("createJob_planning_service", createJob);
+    ros::ServiceServer createPath_planning_service = n.advertiseService("createPath_planning_service", createPath);
+    ros::ServiceServer deletePath_planning_service = n.advertiseService("deletePath_planning_service", deletePath);
+    ros::ServiceServer getPath_planning_service = n.advertiseService("getPath_planning_service", getPath);
+    ros::ServiceServer updateGoal_planning_service = n.advertiseService("updateGoal_planning_service", updateGoal);
+    ros::ServiceServer updateTime_planning_service = n.advertiseService("updateTime_planning_service", updateTime);
 
     ros::spin();
 
