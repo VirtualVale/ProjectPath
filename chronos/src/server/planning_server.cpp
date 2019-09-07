@@ -178,6 +178,7 @@ class path_database
 
 };
 
+path_database pdb();
 
 bool createJob(chronos::createJob_planning_service::Request &req, chronos::createJob_planning_service::Response &res)
 {
