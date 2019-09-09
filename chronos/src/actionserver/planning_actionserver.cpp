@@ -51,12 +51,12 @@ public:
     {
     }
 
-    //checks wether a resource is occupied at the transferred time or not
+    //checks wether a resource is occupied at the transferred time or not (checked)
     bool checkOccupancy(int resource_id, ros::Time start_time)
     {
         for(int i=0; i<plan[resource_id].size(); i++)
         {
-            if(time >= plan[resource_id][i].poses.front().header.stamp && time <= plan[resource_id][i].poses.back().header.stamp)
+            if(start_time >= plan[resource_id][i].poses.front().header.stamp && start_time <= plan[resource_id][i].poses.back().header.stamp)
             {
                 return true;                
             }
@@ -65,7 +65,7 @@ public:
     }
     
     //creating the requested job 
-    //includes checking the parameter and finding the best fitting resource
+    //includes checking the parameter and finding the best fitting resource (checked)
     bool createJob(ros::Time start_time ,geometry_msgs::PoseStamped goal)
     {
         ROS_INFO("Creating Job.");
@@ -110,7 +110,7 @@ public:
         std::cin >> answer;
         if(answer == 'y')
         {
-            if(insertPath(plan[resource_min], path_shortest)
+            if(insertPath(resource_id, path_shortest)
             {
                 ROS_INFO("Path inserted.");
             } else {
@@ -119,7 +119,7 @@ public:
         }
     }
 
-    //pathcreation gives back the time the resource needs to execute the job
+    //pathcreation gives back the time the resource needs to execute the job (checked)
     int createPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped goal)
     {
             
@@ -133,7 +133,7 @@ public:
         pts_goal.start_time.data = start_time;
             
         ac.sendGoal(pts_goal);
-            
+        
         bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
 
         if (finished_before_timeout)
@@ -149,17 +149,8 @@ public:
 
     bool deletePath(int resource_id, ros::Time start_time)
     {
-        int diff_min = 100000;
-        int path_id;
-        for(int i=0; i<plan[resource_id]; i++)
-        {
-            int diff = abs(plan[i].poses.header.stamp.toSec()-start_time);
-            if(diff < diff_min)
-            {
-                diff_min = diff;
-                path_id = i;
-            }
-        }
+        int pathID_to_delete = getPathID(resource_id, start_time)
+        
         //deletewithErase ?
     }
 
@@ -192,9 +183,21 @@ public:
         }
     }
 
-    bool getPath(int resource_id, ros::Time start_time)
+    //find the path with the transferred start_time in a resource path (checked)
+    int getPathID(int resource_id, ros::Time start_time)
     {
-        //todo implement function similar to pathAtTime
+        int diff, diff_min = 100000;
+        int path_id;
+        for(int i=0; i<plan[resource_id]; i++)
+        {
+            diff = abs(plan[i].poses.header.stamp.toSec()-start_time);
+            if(diff < diff_min)
+            {
+                diff_min = diff;
+                path_id = i;
+            }
+        }
+        return path_id;
     }
 
     bool updateTimeAtPath(int resource_id, ros::Time old_start_time, ros::Time new_start_time)
