@@ -1,0 +1,14 @@
+#goal definition
+byte task
+int32 resource_number
+std_msgs/Time start_time
+std_msgs/Time new_start_time
+geometry_msgs/PoseStamped goal
+geometry_msgs/PoseStamped new_goal
+---
+#result definition
+int32 travel_time
+nav_msgs/Path path
+---
+#feedback
+int32 travel_time

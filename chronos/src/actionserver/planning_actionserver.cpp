@@ -9,6 +9,9 @@
 #include <geometry_msgs/Pose.h>
 #include <iostream>
 #include "chronos/visualization.h"
+#include "chronos/PTSAction.h"
+#include "actionlib/client/simple_action_client.h"
+#include "actionlib/client/terminal_state.h"
 
 class planningAction
 {
@@ -43,6 +46,8 @@ public:
         path_client = n.serviceClient<chronos::path_service>("path_service");
         time_client = n.serviceClient<chronos::time_service>("time_service");
         collision_client = n.serviceClient<chronos::collision_service>("collision_service"); 
+
+        actionlib::SimpleActionClient<chronos::PTSAction> ac("PTS", true);
 
         plan_pub = n.advertise<chronos::visualization>("plan", 1000);
     }
@@ -79,20 +84,20 @@ public:
         int time_min = 1000000;
         int resource_min = -1;
         nav_msgs::Path path_shortest;
-        for(int i=0; i<plan.size(); i++)
+        for(int i=0; i<3; i++)
         {
             if(!plan[i].empty())
             {
-                if(!checkOccupancy(start_time, plan[i]))
+                if(!checkOccupancy(i, start_time))
                 {
                     ROS_INFO("Resource %i free.", i);
-                    travel_time = createPath(i, goal, start_time);
-                    ROS_INFO("Resource %i needs %i secs to reach the transfered goal.", i, travel_times[i]);
+                    travel_time = createPath(i, start_time, goal);
+                    ROS_INFO("Resource %i needs %i secs to reach the transfered goal.", i, travel_time);
                     if(travel_time < time_min)
                     {
                         time_min = travel_time;
                         resource_min = i;
-                        path_shortest = response.path;
+                        //path_shortest = response.path;
                     }
                 }
             }
@@ -103,20 +108,21 @@ public:
             ROS_INFO("No resource is free!");
             return false;
         }
-
+        /*
         //REACTION TO POSSIBLE COLLISIONS
         char answer;
         std::cout << "Should the path be added to the plan of the resource? (y/n)";
         std::cin >> answer;
         if(answer == 'y')
         {
-            if(insertPath(resource_id, path_shortest)
+            if(insertPath(resource_min, path_shortest))
             {
                 ROS_INFO("Path inserted.");
             } else {
                 ROS_INFO("Path insertion failed.");
             }
         }
+        */
     }
 
     //pathcreation gives back the time the resource needs to execute the job (checked)
@@ -142,45 +148,131 @@ public:
             ROS_INFO("Action finished: %s",state.toString().c_str());
         }
         else
+        {
             ROS_INFO("Action did not finish before the time out.");
-
+        }
         return ac.getResult();
     }
 
+    //delete the path at the transfered start time (checked)
     bool deletePath(int resource_id, ros::Time start_time)
     {
-        int pathID_to_delete = getPathID(resource_id, start_time)
-        
-        //deletewithErase ?
+        int pathID_to_delete = getPathID(resource_id, start_time);
+        if(pathID_to_delete == plan[resource_id].size()-1)
+        {
+            plan[resource_id].pop_back();
+        }else{
+            std::vector<nav_msgs::Path>::iterator it = plan[resource_id].begin();
+            plan[resource_id].erase(it+pathID_to_delete);
+            nav_msgs::Path successor = createPath(resource_id, plan[resource_id][i+1].poses.front().header.stamp, createdPath.poses.back());
+            plan[resource_id][pathID_to_delete+1] = successor;
+        }
+        return true;
     }
 
+    //Callback of the Actionserver, recognizes the task and executes
     bool executeCB(const chronos::planningGoalConstPtr &goal)
     {
-   
+        ROS_INFO("Callback Planning_actionserver.");
+        //PARAMETERCHECK
+        int task = (goal -> task);
+        if(task<0 || task>8)
+        {
+            ROS_FATAL("Invalid task call.");
+            as_.setAborted();
+            return false;
+        }
+        ROS_INFO("Task: [%i]", task);
+
+        //Resources 1,2,3 are mapped to 0,1,2 for computation reasons
+        int resource = (goal-> resource_number) - 1;
+        if(resource>3 || resource<0)
+        {
+            ROS_FATAL("Invalid resource number.");
+            as_.setAborted();
+            return false;
+        }
+        ROS_INFO("resource [%i]", resource);
+
+        ros::Time start_time = goal->start_time.data;
+        if(checkOccupancy(resource, start_time)){
+            ROS_FATAL("ERROR: Resource is busy at this start time.");
+            as_.setAborted();
+            return false;
+        }
+        ROS_INFO("start time [%.2lf]", startTime.toSec());
+
+        ros::Time new_start_time = goal->new_start_time;
+
+        geometry_msgs::PoseStamped goalPose;
+        goalPose.pose.position.x = goal->goal.pose.position.x;
+        goalPose.pose.position.y = goal->goal.pose.position.y;
+        //TODO check the input
+        ROS_INFO("goal x [%.2lf] y [%.2lf]", goalPose.pose.position.x, goalPose.pose.position.y);
+
+        geometry_msgs::PoseStamped new_goalPose;
+        new_goalPose.pose.position.x = goal->new_goal.pose.position.x;
+        new_goalPose.pose.position.y = goal->new_goal.pose.position.y;
+        //TODO check the input
+        ROS_INFO("new goal x [%.2lf] y [%.2lf]", new_goalPose.pose.position.x, new_goalPose.pose.position.y);
+
+        switch (task)
+        {
+            case 0:
+                if(createJob(start_time, goalPose))
+                    ROS_INFO("Job created");
+                break;
+            case 1:
+                /* code for condition */
+                break;
+            case 2:
+                /* code for condition */
+                break;
+            case 3:
+                /* code for condition */
+                break;
+            case 4:
+                /* code for condition */
+                break;
+            case 5:
+                /* code for condition */
+                break;
+            case 6:
+                /* code for condition */
+                break;
+            case 7:
+                /* code for condition */
+                break;
+            case 8:
+                /* code for condition */
+                break;                                                                                                
+            default:
+                ROS_ERROR("Task unclear.");
+        }
+        
     }
 
     bool insertPath(int resource_id, nav_msgs::Path createdPath)
     {
-        if(plan.empty())
+        if(plan[resource_id].empty())
         {
-            plan.push_back(createdPath);
+            plan[resource_id].push_back(createdPath);
             return true;
-        } else {
-            std::vector<nav_msgs::Path>::iterator it = plan.begin();
-        for(int i=0; i<plan.size(); i++)
+        }
+        std::vector<nav_msgs::Path>::iterator it = plan[resource_id].begin();
+        for(int i=0; i<plan[resource_id].size(); i++)
         {
-        if(plan[i].poses.front().header.stamp > createdPath.poses.front().header.stamp)
+        if(plan[resource_id][i].poses.front().header.stamp > createdPath.poses.front().header.stamp)
             {
-                plan.insert(it+i, createdPath);
+                plan[resource_id].insert(it+i, createdPath);
                 ROS_INFO("Path inserted at %i, pointer at %i th path", i, i+1);
-                nav_msgs::Path successor = createPath(createdPath.poses.back(), plan[i+1].poses.back(), plan[i+1].poses.front().header.stamp, path_client, time_client);
-                plan[i+1] = successor;
+                nav_msgs::Path successor = createPath(createdPath.poses.back(), plan[resource_id][i+1].poses.back(), plan[resource_id][i+1].poses.front().header.stamp, path_client, time_client);
+                plan[resource_id][i+1] = successor;
                 return true;
             }
         }
         plan.push_back(createdPath);
         return true;
-        }
     }
 
     //find the path with the transferred start_time in a resource path (checked)
@@ -190,7 +282,7 @@ public:
         int path_id;
         for(int i=0; i<plan[resource_id]; i++)
         {
-            diff = abs(plan[i].poses.header.stamp.toSec()-start_time);
+            diff = abs(plan[resource_id][i].poses.header.stamp.toSec()-start_time);
             if(diff < diff_min)
             {
                 diff_min = diff;
