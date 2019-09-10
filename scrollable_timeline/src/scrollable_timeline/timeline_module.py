@@ -86,7 +86,8 @@ class ScrollableTimeline(Plugin):
 
     def callback(self, plan):
         print(len(plan.plan_1))
-        self._widget.plan1_tableView.addItems([str(len(plan.plan_1)), "Love my Robotics", "Index i, goal x y, start time time"])
+        self._widget.plan1_listWidget.addItem("l")
+        #self._widget.plan1_listView.addItems([str(len(plan.plan_1)), "Love my Robotics", "Index i, goal x y, start time time"])
 
 
     def _on_combobox_changed(self):
