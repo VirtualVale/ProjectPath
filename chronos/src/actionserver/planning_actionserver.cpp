@@ -8,7 +8,6 @@
 #include <chronos/planningAction.h>
 #include <geometry_msgs/Pose.h>
 #include <iostream>
-#include "chronos/visualization.h"
 #include "chronos/PTSAction.h"
 #include "actionlib/client/simple_action_client.h"
 #include "actionlib/client/terminal_state.h"
@@ -49,7 +48,7 @@ public:
         time_client = n.serviceClient<chronos::time_service>("time_service");
         collision_client = n.serviceClient<chronos::collision_service>("collision_service"); 
 
-        plan_pub = n.advertise<chronos::visualization>("plan", 1000);
+        plan_pub = n.advertise<chronos::plan>("plan", 1000);
     }
 
     ~planningAction(void)
@@ -74,12 +73,8 @@ public:
     bool createJob(ros::Time start_time ,geometry_msgs::PoseStamped goal)
     {
         ROS_INFO("Creating Job.");
-        //PARAMETERCHECK
-        //depends on the provided map
-        ROS_INFO("Check the goal.");
-            
 
-        ROS_INFO("Check the time or look which resource is available.");
+        ROS_INFO("Availability Check.");
         int travel_time;
         int time_min = 1000000;
         int resource_min = -1;
@@ -90,27 +85,24 @@ public:
             {
                 if(!checkOccupancy(i, start_time))
                 {
-                    ROS_INFO("Resource %i free.", i);
                     path_created = createPath(i, start_time, goal);
-                    ROS_INFO("Path created with size %i", path_created.poses.size());
                     travel_time = path_created.poses.back().header.stamp.toSec()-path_created.poses.front().header.stamp.toSec();
                     ROS_INFO("Resource %i needs %i secs to reach the transfered goal.", i, travel_time);
                     if(travel_time < time_min)
                     {
                         time_min = travel_time;
                         resource_min = i;
-                        //path_shortest = response.path;
+                        path_shortest = path_created;
                     }
                 }
             }
         }
-
         if(resource_min == -1)
         {
             ROS_INFO("No resource is free!");
             return false;
         }
-        /*
+        ROS_INFO("Resource %i has won the race.", resource_min);
         //REACTION TO POSSIBLE COLLISIONS
         char answer;
         std::cout << "Should the path be added to the plan of the resource? (y/n)";
@@ -124,7 +116,12 @@ public:
                 ROS_INFO("Path insertion failed.");
             }
         }
-        */
+        chronos::plan plan_overall;
+        plan_overall.plan_1 = plan[0];
+        plan_overall.plan_2 = plan[1];
+        plan_overall.plan_3 = plan[2];
+        plan_pub.publish(plan_overall);
+        return true;
     }
 
     //pathcreation gives back the time the resource needs to execute the job (checked)
@@ -154,7 +151,6 @@ public:
             ROS_INFO("Action did not finish before the time out.");
         }
         chronos::PTSResult pts_result = *(ac.getResult());
-        ROS_INFO("created Path size: %i", pts_result.path.poses.size());
         return pts_result.path;
     }
 
@@ -224,7 +220,12 @@ public:
         {
             case 0:
                 if(createJob(start_time, goalPose))
+                {
+                    as_.setSucceeded();
                     ROS_INFO("Job created");
+                } else {
+                    as_.setAborted();
+                }
                 break;
             case 1:
                 /* code for condition */

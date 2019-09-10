@@ -8,14 +8,13 @@
 #include <chronos/PTSAction.h>
 #include <geometry_msgs/Pose.h>
 #include <iostream>
-#include "chronos/visualization.h"
+
 
 
 
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
 nav_msgs::Path createPath( geometry_msgs::PoseStamped start, geometry_msgs::PoseStamped goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
 nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
-std::vector<nav_msgs::Path> insertPath(nav_msgs::Path path, std::vector<nav_msgs::Path> plan, ros::ServiceClient path_client, ros::ServiceClient time_client);
 
 class PTSAction
 {
@@ -51,7 +50,7 @@ public:
         time_client = n.serviceClient<chronos::time_service>("time_service");
         collision_client = n.serviceClient<chronos::collision_service>("collision_service"); 
 
-        plan_pub = n.advertise<chronos::visualization>("plan", 1000);
+
     }
 
     ~PTSAction(void)
@@ -170,35 +169,10 @@ public:
         }
 
         //REACTION TO POSSIBLE COLLISIONS
-        char answer;
-        std::cout << "Should the path be added to the plan of the resource? (y/n)";
-        std::cin >> answer;
-        if(answer == 'y')
-        {
-            //ADDING PATH TO PLAN
-            plan[resource] = insertPath(createdPath, plan[resource], path_client, time_client);
-            ROS_INFO("Plan added.");
 
-            chronos::visualization visu;
-            visu.resource_number = resource;
-            visu.resource_plan = plan[resource];
-            plan_pub.publish(visu);
-
-            ROS_INFO("plan:");
-            for(int i=0; i<3; i++){
-                ROS_INFO("Resource %i:", i);
-                for(int j=0; j<plan[i].size(); j++){
-                    ROS_INFO("plan %i, start [%.2lf][%.2lf], goal [%.2lf][%.2lf]", j, plan[i][j].poses.front().pose.position.x, plan[i][j].poses.front().pose.position.y, plan[i][j].poses.back().pose.position.x, plan[i][j].poses.back().pose.position.y);
-                }
-            }
-
-            result_.path = createdPath;
-            result_.travel_time = abs(createdPath.poses.front().header.stamp.toSec() - createdPath.poses.back().header.stamp.toSec());
-            as_.setSucceeded(result_);
-            return true;
-        }
-
-        as_.setAborted();
+        result_.path = createdPath;
+        result_.travel_time = abs(createdPath.poses.front().header.stamp.toSec() - createdPath.poses.back().header.stamp.toSec());
+        as_.setSucceeded(result_);
         return true;
     }
 };
@@ -281,31 +255,4 @@ nav_msgs::Path createPath( geometry_msgs::PoseStamped start, geometry_msgs::Pose
     }    
 
     return tsrv.response.path_timestamped;
-}
-
-std::vector<nav_msgs::Path> insertPath(nav_msgs::Path createdPath, std::vector<nav_msgs::Path> plan, ros::ServiceClient path_client, ros::ServiceClient time_client)
-{
-        if(plan.empty())
-        {
-            plan.push_back(createdPath);
-            return plan;
-        }
-        else
-        {
-            std::vector<nav_msgs::Path>::iterator it = plan.begin();
-            for(int i=0; i<plan.size(); i++)
-            {
-                if(plan[i].poses.front().header.stamp > createdPath.poses.front().header.stamp)
-                {
-                    plan.insert(it+i, createdPath);
-                    ROS_INFO("Path inserted at %i, pointer at %i th path", i, i+1);
-                    nav_msgs::Path successor = createPath(createdPath.poses.back(), plan[i+1].poses.back(), plan[i+1].poses.front().header.stamp, path_client, time_client);
-                    plan[i+1] = successor;
-                    return plan;
-                }
-            }
-            plan.push_back(createdPath);
-            //ROS_INFO("ERROR: path insertion found no correct place");
-            return plan;
-        }
 }
