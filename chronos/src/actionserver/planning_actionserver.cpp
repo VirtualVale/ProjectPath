@@ -12,6 +12,8 @@
 #include "chronos/PTSAction.h"
 #include "actionlib/client/simple_action_client.h"
 #include "actionlib/client/terminal_state.h"
+#include "chronos/plan.h"
+
 
 class planningAction
 {
@@ -47,8 +49,6 @@ public:
         time_client = n.serviceClient<chronos::time_service>("time_service");
         collision_client = n.serviceClient<chronos::collision_service>("collision_service"); 
 
-        actionlib::SimpleActionClient<chronos::PTSAction> ac("PTS", true);
-
         plan_pub = n.advertise<chronos::visualization>("plan", 1000);
     }
 
@@ -83,15 +83,17 @@ public:
         int travel_time;
         int time_min = 1000000;
         int resource_min = -1;
-        nav_msgs::Path path_shortest;
+        nav_msgs::Path path_shortest, path_created;
         for(int i=0; i<3; i++)
         {
-            if(!plan[i].empty())
+            if(plan[i].empty())
             {
                 if(!checkOccupancy(i, start_time))
                 {
                     ROS_INFO("Resource %i free.", i);
-                    travel_time = createPath(i, start_time, goal);
+                    path_created = createPath(i, start_time, goal);
+                    ROS_INFO("Path created with size %i", path_created.poses.size());
+                    travel_time = path_created.poses.back().header.stamp.toSec()-path_created.poses.front().header.stamp.toSec();
                     ROS_INFO("Resource %i needs %i secs to reach the transfered goal.", i, travel_time);
                     if(travel_time < time_min)
                     {
@@ -126,15 +128,15 @@ public:
     }
 
     //pathcreation gives back the time the resource needs to execute the job (checked)
-    int createPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped goal)
+    nav_msgs::Path createPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped goal)
     {
-            
+        actionlib::SimpleActionClient<chronos::PTSAction> ac("PTS", true);
         ROS_INFO("Waiting for PTS to start.");
         ac.waitForServer();
         ROS_INFO("PTS ready, sending goal");
             
-        chronos::PTSgoal pts_goal;
-        pts_goal.resource_number = resource_id;
+        chronos::PTSGoal pts_goal;
+        pts_goal.resource_number = resource_id+1;
         pts_goal.goal = goal;
         pts_goal.start_time.data = start_time;
             
@@ -151,7 +153,9 @@ public:
         {
             ROS_INFO("Action did not finish before the time out.");
         }
-        return ac.getResult();
+        chronos::PTSResult pts_result = *(ac.getResult());
+        ROS_INFO("created Path size: %i", pts_result.path.poses.size());
+        return pts_result.path;
     }
 
     //delete the path at the transfered start time (checked)
@@ -164,7 +168,7 @@ public:
         }else{
             std::vector<nav_msgs::Path>::iterator it = plan[resource_id].begin();
             plan[resource_id].erase(it+pathID_to_delete);
-            nav_msgs::Path successor = createPath(resource_id, plan[resource_id][i+1].poses.front().header.stamp, createdPath.poses.back());
+            nav_msgs::Path successor = createPath(resource_id, plan[resource_id][pathID_to_delete+1].poses.front().header.stamp, plan[resource_id][pathID_to_delete+1].poses.back());
             plan[resource_id][pathID_to_delete+1] = successor;
         }
         return true;
@@ -200,9 +204,9 @@ public:
             as_.setAborted();
             return false;
         }
-        ROS_INFO("start time [%.2lf]", startTime.toSec());
+        ROS_INFO("start time [%.2lf]", start_time.toSec());
 
-        ros::Time new_start_time = goal->new_start_time;
+        ros::Time new_start_time = goal->new_start_time.data;
 
         geometry_msgs::PoseStamped goalPose;
         goalPose.pose.position.x = goal->goal.pose.position.x;
@@ -266,12 +270,12 @@ public:
             {
                 plan[resource_id].insert(it+i, createdPath);
                 ROS_INFO("Path inserted at %i, pointer at %i th path", i, i+1);
-                nav_msgs::Path successor = createPath(createdPath.poses.back(), plan[resource_id][i+1].poses.back(), plan[resource_id][i+1].poses.front().header.stamp, path_client, time_client);
+                nav_msgs::Path successor = createPath(resource_id, plan[resource_id][i+1].poses.front().header.stamp, plan[resource_id][i+1].poses.back());
                 plan[resource_id][i+1] = successor;
                 return true;
             }
         }
-        plan.push_back(createdPath);
+        plan[resource_id].push_back(createdPath);
         return true;
     }
 
@@ -280,9 +284,9 @@ public:
     {
         int diff, diff_min = 100000;
         int path_id;
-        for(int i=0; i<plan[resource_id]; i++)
+        for(int i=0; i<plan[resource_id].size(); i++)
         {
-            diff = abs(plan[resource_id][i].poses.header.stamp.toSec()-start_time);
+            diff = abs(plan[resource_id][i].poses.front().header.stamp.toSec()-start_time.toSec());
             if(diff < diff_min)
             {
                 diff_min = diff;

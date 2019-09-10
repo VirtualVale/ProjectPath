@@ -57,6 +57,7 @@ find_package(catkin REQUIRED REQUIRED COMPONENTS
  add_message_files(
    FILES
    visualization.msg
+   plan.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -154,6 +155,7 @@ add_executable(collision_server src/server/collision_server.cpp)
 add_executable(collision_test src/tests/collision_test.cpp)
 add_executable(PTS_actionserver src/actionserver/PTS_actionserver.cpp)
 add_executable(PTS_test src/tests/PTS_test.cpp)
+add_executable(planning_test src/tests/planning_test.cpp)
 add_executable(visualization src/visualization.cpp)
 add_executable(path_execution src/path_execution.cpp)
 add_executable(planning_actionserver src/actionserver/planning_actionserver.cpp)
@@ -177,6 +179,7 @@ add_dependencies(PTS_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_
 add_dependencies(visualization ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(path_execution ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(planning_actionserver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(planning_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -204,6 +207,9 @@ target_link_libraries(PTS_actionserver
   ${catkin_LIBRARIES}
 )
 target_link_libraries(PTS_test
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(planning_test
   ${catkin_LIBRARIES}
 )
 target_link_libraries(visualization

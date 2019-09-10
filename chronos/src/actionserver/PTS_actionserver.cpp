@@ -122,6 +122,7 @@ public:
         createdPath = createPath(startPose, goalPose, startTime, path_client, time_client);
         ROS_INFO("goal time [%.2lf]", createdPath.poses.back().header.stamp.toSec());
         
+
         //COLLISIONCHECKING
         chronos::collision_service csrv;
         csrv.request.superior = createdPath;
@@ -191,6 +192,7 @@ public:
                 }
             }
 
+            result_.path = createdPath;
             result_.travel_time = abs(createdPath.poses.front().header.stamp.toSec() - createdPath.poses.back().header.stamp.toSec());
             as_.setSucceeded(result_);
             return true;

@@ -1,5 +1,5 @@
 #goal definition
-byte task
+int32 task
 int32 resource_number
 std_msgs/Time start_time
 std_msgs/Time new_start_time

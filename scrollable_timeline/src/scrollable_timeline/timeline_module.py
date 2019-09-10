@@ -71,16 +71,20 @@ class ScrollableTimeline(Plugin):
         self._widget.startTime_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.input_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.display_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
-        #self._widget.time_slider.setSliderPosition(QDateTime.currentMSecsSinceEpoch())
+        self._widget.job_comboBox.addItems(["create Job", "Delete Job"])
         
         self._publisher = rospy.Publisher("timer", Time, queue_size=100)
 
         self._widget.currentTime_button.clicked.connect(self._on_currentTime_button_clicked)
         self._widget.time_slider.valueChanged.connect(self._on_time_slider_changed)
-        self._widget.goal_pushButton.clicked.connect(self._on_goal_button_clicked)
+        self._widget.execute_pushButton.clicked.connect(self._on_execute_button_clicked)
         self._widget.display_dateTimeEdit.dateTimeChanged.connect(self._on_display_dateTimeEdit_changed)
         self._widget.input_dateTimeEdit.dateTimeChanged.connect(self._on_time_slider_changed)
         self._widget.refresh_pushButton.clicked.connect(self._on_refresh_button_clicked)
+        self._widget.job_comboBox.currentIndexChanged.connect(self._on_combobox_changed)
+
+    def _on_combobox_changed(self):
+        print(self._widget.job_comboBox.currentIndex())
 
     def _on_refresh_button_clicked(self):
         self._widget.position_x_doubleSpinBox.setValue(self._widget._x)
@@ -101,24 +105,19 @@ class ScrollableTimeline(Plugin):
         #self._widget.time_slider.setValue(rospy.get_rostime())
 
     
-    def _on_goal_button_clicked(self):
+    def _on_execute_button_clicked(self):
         # client for pathCreation with actionserver
-        client = actionlib.SimpleActionClient('PTS', chronos.msg.PTSAction)
-        # client.wait_for_server()
-        goal = chronos.msg.PTSGoal()
-        goal.goal.pose.position.x = self._widget.position_x_doubleSpinBox.value()
-        goal.goal.pose.position.y = self._widget.position_y_doubleSpinBox.value()
+        client = actionlib.SimpleActionClient('planning_actionserver', chronos.msg.planningAction)
+        goal = chronos.msg.planningGoal()
+        goal.task = self._widget.job_comboBox.currentIndex()
+        goal.resource_number = self._widget.resource_spinBox.value()
         ROSTimeInMsecs = self._widget.startTime_dateTimeEdit.dateTime().toMSecsSinceEpoch() - (QDateTime.currentMSecsSinceEpoch()-rospy.get_rostime().to_sec()*1000)
         goal.start_time.data = rospy.Time(ROSTimeInMsecs*0.001)
-        goal.resource_number = self._widget.resource_spinBox.value()
+        goal.goal.pose.position.x = self._widget.position_x_doubleSpinBox.value()
+        goal.goal.pose.position.y = self._widget.position_y_doubleSpinBox.value()
         # Sends the goal to the action server.
         client.send_goal(goal)
-
-        # Waits for the server to finish performing the action.
-        # client.wait_for_result()
-
-        # Prints out the result of executing the action
-        return client.get_result()  # A FibonacciResult
+        print(client.get_state())
 
     def on_parameter_changed(self):
         self._send_time(self._widget.time_slider.value())

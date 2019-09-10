@@ -203,24 +203,11 @@
      <widget class="QDoubleSpinBox" name="position_x_doubleSpinBox"/>
     </item>
     <item row="8" column="1">
-     <widget class="QPushButton" name="goal_pushButton">
+     <widget class="QPushButton" name="execute_pushButton">
       <property name="text">
-       <string>Set Goal</string>
+       <string>Execute</string>
       </property>
      </widget>
-    </item>
-    <item row="8" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
     </item>
     <item row="3" column="1">
      <widget class="QLabel" name="position_x_label">
@@ -249,6 +236,16 @@
       </property>
       <property name="calendarPopup">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QComboBox" name="job_comboBox">
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <property name="currentText">
+       <string/>
       </property>
      </widget>
     </item>
