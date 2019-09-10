@@ -8,8 +8,11 @@
 #include <chronos/PTSAction.h>
 #include <geometry_msgs/Pose.h>
 #include <iostream>
+#include "chronos/plan.h"
 
 
+//one plan to rule them all
+std::vector<nav_msgs::Path>  plan[3];
 
 
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
@@ -27,8 +30,7 @@ protected:
     chronos::PTSFeedback feedback_;
     chronos::PTSResult result_;
 
-    //one plan to rule them all
-    std::vector<nav_msgs::Path>  plan[99];
+
 
     //clients for the required server
     ros::ServiceClient path_client;
@@ -127,7 +129,7 @@ public:
         csrv.request.superior = createdPath;
         
         //check possible collisions with paths from bigger resource numbers
-        for(int i=resource+1; i<99; i++)
+        for(int i=resource+1; i<3; i++)
         {
             for(int j=0; j<plan[i].size(); j++)
             {
@@ -177,12 +179,21 @@ public:
     }
 };
 
+void planCallback(const chronos::plan::ConstPtr& msg)
+{
+    ROS_INFO("planCallback");
+    plan[0] = msg -> plan_1;
+    plan[1] = msg -> plan_2;
+    plan[2] = msg -> plan_3;
+    //plan[(*msg).resource_number] = (*msg).resource_plan;
+}
 
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "PTS");
     PTSAction PTS("PTS");
     ros::NodeHandle n;
+    ros::Subscriber plan_sub = n.subscribe("plan", 1000, planCallback);
     while (ros::ok())
     {
         ros::spinOnce();

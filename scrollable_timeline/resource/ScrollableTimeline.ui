@@ -283,13 +283,17 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QTableView" name="tableView"/>
+     <widget class="QTableView" name="plan1_tableView">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="1" column="2">
-     <widget class="QTableView" name="tableView_2"/>
+     <widget class="QTableView" name="plan2_tableView"/>
     </item>
     <item row="1" column="3">
-     <widget class="QTableView" name="tableView_3"/>
+     <widget class="QTableView" name="plan3_tableView"/>
     </item>
    </layout>
   </widget>

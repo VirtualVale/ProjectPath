@@ -116,11 +116,6 @@ public:
                 ROS_INFO("Path insertion failed.");
             }
         }
-        chronos::plan plan_overall;
-        plan_overall.plan_1 = plan[0];
-        plan_overall.plan_2 = plan[1];
-        plan_overall.plan_3 = plan[2];
-        plan_pub.publish(plan_overall);
         return true;
     }
 
@@ -255,6 +250,13 @@ public:
                 ROS_ERROR("Task unclear.");
         }
         
+        chronos::plan plan_overall;
+        plan_overall.plan_1 = plan[0];
+        plan_overall.plan_2 = plan[1];
+        plan_overall.plan_3 = plan[2];
+        plan_pub.publish(plan_overall);
+        return true;
+        
     }
 
     bool insertPath(int resource_id, nav_msgs::Path createdPath)
@@ -297,6 +299,7 @@ public:
         return path_id;
     }
 
+    //update makes no sense in the given context
     bool updateTimeAtPath(int resource_id, ros::Time old_start_time, ros::Time new_start_time)
     {
         //todo implement function with the time_client

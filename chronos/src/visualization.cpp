@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "chronos/visualization.h"
+#include "chronos/plan.h"
 #include "nav_msgs/Path.h"
 #include "ros/time.h"
 #include <std_msgs/Time.h>
@@ -13,10 +13,13 @@ void visualizePlan();
 std::vector<nav_msgs::Path> plan[3];
 ros::Time snapshot;
 
-void planCallback(const chronos::visualization::ConstPtr& msg)
+void planCallback(const chronos::plan::ConstPtr& msg)
 {
     ROS_INFO("planCallback");
-    plan[(*msg).resource_number] = (*msg).resource_plan;
+    plan[0] = msg -> plan_1;
+    plan[1] = msg -> plan_2;
+    plan[2] = msg -> plan_3;
+    //plan[(*msg).resource_number] = (*msg).resource_plan;
 }
 
 void timeCallback(const std_msgs::Time::ConstPtr& msg)

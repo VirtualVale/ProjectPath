@@ -82,6 +82,12 @@ class ScrollableTimeline(Plugin):
         self._widget.input_dateTimeEdit.dateTimeChanged.connect(self._on_time_slider_changed)
         self._widget.refresh_pushButton.clicked.connect(self._on_refresh_button_clicked)
         self._widget.job_comboBox.currentIndexChanged.connect(self._on_combobox_changed)
+        self.sub = rospy.Subscriber("plan", chronos.msg.plan, self.callback)
+
+    def callback(self, plan):
+        print(len(plan.plan_1))
+        self._widget.plan1_tableView.addItems([str(len(plan.plan_1)), "Love my Robotics", "Index i, goal x y, start time time"])
+
 
     def _on_combobox_changed(self):
         print(self._widget.job_comboBox.currentIndex())
