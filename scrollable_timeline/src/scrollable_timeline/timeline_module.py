@@ -71,7 +71,7 @@ class ScrollableTimeline(Plugin):
         self._widget.startTime_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.input_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.display_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
-        self._widget.job_comboBox.addItems(["create Job", "Delete Job"])
+        self._widget.job_comboBox.addItems(["create Job", "Delete Job", "Read Job"])
         
         self._publisher = rospy.Publisher("timer", Time, queue_size=100)
 

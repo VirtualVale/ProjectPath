@@ -223,7 +223,13 @@ public:
                 }
                 break;
             case 1:
-                /* code for condition */
+                if(deletePath(resource, start_time))
+                {
+                    as_.setSucceeded();
+                    ROS_INFO("Job deleted")
+                } else {
+                    as_.setAborted();
+                }
                 break;
             case 2:
                 /* code for condition */
