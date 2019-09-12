@@ -74,11 +74,11 @@ public:
         //START TIME
         ros::Time startTime = goal->start_time.data;
         if(occupiedBool(startTime, plan[resource])){
-            ROS_INFO("ERROR: Resource is busy at this start time.");
+            ROS_FATAL("ERROR: Resource is busy at this start time.");
             as_.setAborted();
             return false;
         }
-        ROS_INFO("start time [%.2lf]", startTime.toSec());
+        ROS_INFO("start time [%lf]", startTime.toSec());
 
         //START POSITION DETERMINATION
         geometry_msgs::PoseStamped startPose; 

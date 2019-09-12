@@ -90,7 +90,7 @@ class ScrollableTimeline(Plugin):
         self._widget.plan2_listWidget.clear()
         self._widget.plan3_listWidget.clear()
         for path in plan.plan_1:
-            self._widget.plan1_listWidget.addItem("start time: " + str(datetime.fromtimestamp(self.origin_time*0.001+path.poses[0].header.stamp.to_sec())) + " x: " + str(path.poses[-1].pose.position.x) + " y: " + str(path.poses[-1].pose.position.y))
+            self._widget.plan1_listWidget.addItem("start time: " + str(datetime.fromtimestamp(self.origin_time*0.001+path.poses[0].header.stamp.to_sec())) + "start position x: " + str(path.poses[0].pose.position.x) + " y: " + str(path.poses[0].pose.position.y) + "\n end time: " + str(datetime.fromtimestamp(self.origin_time*0.001+path.poses[-1].header.stamp.to_sec())) + " goal position:  x: " + str(path.poses[-1].pose.position.x) + " y: " + str(path.poses[-1].pose.position.y))
         for path in plan.plan_2:
             self._widget.plan2_listWidget.addItem("start time: " + str(datetime.fromtimestamp(self.origin_time*0.001+path.poses[0].header.stamp.to_sec())) + " x: " + str(path.poses[-1].pose.position.x) + " y: " + str(path.poses[-1].pose.position.y))
         for path in plan.plan_3:
@@ -125,12 +125,12 @@ class ScrollableTimeline(Plugin):
         goal.task = self._widget.job_comboBox.currentIndex()
         goal.resource_number = self._widget.resource_spinBox.value()
         ROSTimeInMsecs = self._widget.startTime_dateTimeEdit.dateTime().toMSecsSinceEpoch() - (QDateTime.currentMSecsSinceEpoch()-rospy.get_rostime().to_sec()*1000)
-        goal.start_time.data = rospy.Time(ROSTimeInMsecs*0.001)
-        goal.goal.pose.position.x = self._widget.position_x_doubleSpinBox.value()
-        goal.goal.pose.position.y = self._widget.position_y_doubleSpinBox.value()
-        # Sends the goal to the action server.
-        client.send_goal(goal)
-        print(client.get_state())
+        if(ROSTimeInMsecs > 0):
+            goal.start_time.data = rospy.Time(ROSTimeInMsecs*0.001)
+            goal.goal.pose.position.x = self._widget.position_x_doubleSpinBox.value()
+            goal.goal.pose.position.y = self._widget.position_y_doubleSpinBox.value()
+            # Sends the goal to the action server.
+            client.send_goal(goal)
 
     def on_parameter_changed(self):
         self._send_time(self._widget.time_slider.value())

@@ -60,7 +60,7 @@ public:
     {
         for(int i=0; i<plan[resource_id].size(); i++)
         {
-            if(start_time >= plan[resource_id][i].poses.front().header.stamp && start_time <= plan[resource_id][i].poses.back().header.stamp)
+            if(start_time.toSec() >= (plan[resource_id][i].poses.front().header.stamp.toSec()-1) && start_time.toSec() <= plan[resource_id][i].poses.back().header.stamp.toSec())
             {
                 return true;                
             }
@@ -72,9 +72,6 @@ public:
     //includes checking the parameter and finding the best fitting resource (checked)
     bool createJob(ros::Time start_time ,geometry_msgs::PoseStamped goal)
     {
-        ROS_INFO("Creating Job.");
-
-        ROS_INFO("Availability Check.");
         int travel_time;
         int time_min = 1000000;
         int resource_min = -1;
@@ -97,21 +94,18 @@ public:
         
         if(resource_min == -1)
         {
-            ROS_INFO("No resource is free!");
+            ROS_ERROR("No resource is free!");
             return false;
         }
-        ROS_INFO("Resource %i has won the race.", resource_min);
         //REACTION TO POSSIBLE COLLISIONS
         char answer;
         std::cout << "Should the path be added to the plan of the resource? (y/n)";
         std::cin >> answer;
         if(answer == 'y')
         {
-            if(insertPath(resource_min, path_shortest))
+            if(!insertPath(resource_min, path_shortest))
             {
-                ROS_INFO("Path inserted.");
-            } else {
-                ROS_INFO("Path insertion failed.");
+                ROS_ERROR("Insertion failed.");
             }
         }
         return true;
@@ -121,9 +115,7 @@ public:
     nav_msgs::Path createPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped goal)
     {
         actionlib::SimpleActionClient<chronos::PTSAction> ac("PTS", true);
-        ROS_INFO("Waiting for PTS to start.");
         ac.waitForServer();
-        ROS_INFO("PTS ready, sending goal");
             
         chronos::PTSGoal pts_goal;
         pts_goal.resource_number = resource_id+1;
@@ -137,11 +129,10 @@ public:
         if (finished_before_timeout)
         {
             actionlib::SimpleClientGoalState state = ac.getState();
-            ROS_INFO("Action finished: %s",state.toString().c_str());
         }
         else
         {
-            ROS_INFO("Action did not finish before the time out.");
+            ROS_ERROR("Action did not finish before the time out.");
         }
         chronos::PTSResult pts_result = *(ac.getResult());
         return pts_result.path;
@@ -166,7 +157,6 @@ public:
     //Callback of the Actionserver, recognizes the task and executes
     bool executeCB(const chronos::planningGoalConstPtr &goal)
     {
-        ROS_INFO("Callback Planning_actionserver.");
         //PARAMETERCHECK
         int task = (goal -> task);
         if(task<0 || task>8)
@@ -193,7 +183,7 @@ public:
             as_.setAborted();
             return false;
         }*/
-        ROS_INFO("start time [%.2lf]", start_time.toSec());
+        ROS_INFO("start time [%lf]", start_time.toSec());
 
         ros::Time new_start_time = goal->new_start_time.data;
 
@@ -215,7 +205,6 @@ public:
                 if(createJob(start_time, goalPose))
                 {
                     as_.setSucceeded();
-                    ROS_INFO("Job created");
                 } else {
                     as_.setAborted();
                 }
@@ -224,7 +213,6 @@ public:
                 if(deletePath(resource, start_time))
                 {
                     as_.setSucceeded();
-                    ROS_INFO("Job deleted");
                 } else {
                     as_.setAborted();
                 }
@@ -234,20 +222,25 @@ public:
                 break;
             case 3:
                 {
-                    nav_msgs::Path path = createPath(resource, start_time, goalPose);
-
-                    char answer;
-                    std::cout << "Should the path be added to the plan of the resource? (y/n)";
-                    std::cin >> answer;
-                    if(answer == 'y')
+                    if(checkOccupancy(resource, start_time))
                     {
-                        if(insertPath(resource, path))
+                        ROS_ERROR("Resource busy.");
+                        as_.setAborted();
+                    } else {
+                        nav_msgs::Path path = createPath(resource, start_time, goalPose);
+
+                        char answer;
+                        std::cout << "Should the path be added to the plan of the resource? (y/n)";
+                        std::cin >> answer;
+                        if(answer == 'y')
                         {
-                            ROS_INFO("Path inserted.");
-                            as_.setSucceeded();
-                        } else {
-                            ROS_INFO("Path insertion failed.");
-                            as_.setAborted();
+                            if(insertPath(resource, path))
+                            {
+                                as_.setSucceeded();
+                            } else {
+                                ROS_ERROR("Path insertion failed.");
+                                as_.setAborted();
+                            }
                         }
                     }
                 }
