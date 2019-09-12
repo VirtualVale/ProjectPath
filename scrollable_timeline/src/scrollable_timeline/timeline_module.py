@@ -4,6 +4,7 @@ import rospkg
 import actionlib
 import chronos.msg
 
+from datetime import datetime
 from std_msgs.msg import Time
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -66,12 +67,12 @@ class ScrollableTimeline(Plugin):
         context.add_widget(self._widget)
 
         #anchor for the time calculation // time point of system start in unix format (msecs)
-        origin_time = QDateTime.currentMSecsSinceEpoch()-rospy.get_rostime().to_sec()*1000
+        self.origin_time = QDateTime.currentMSecsSinceEpoch()-rospy.get_rostime().to_sec()*1000
 
         self._widget.startTime_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.input_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
         self._widget.display_dateTimeEdit.setDateTime(QDateTime.currentDateTime())
-        self._widget.job_comboBox.addItems(["create Job", "Delete Job", "Read Job"])
+        self._widget.job_comboBox.addItems(["create Job", "Delete Job", "Read Job", "Create Path"])
         
         self._publisher = rospy.Publisher("timer", Time, queue_size=100)
 
@@ -85,10 +86,15 @@ class ScrollableTimeline(Plugin):
         self.sub = rospy.Subscriber("plan", chronos.msg.plan, self.callback)
 
     def callback(self, plan):
-        print(len(plan.plan_1))
-        self._widget.plan1_listWidget.addItem("l")
-        #self._widget.plan1_listView.addItems([str(len(plan.plan_1)), "Love my Robotics", "Index i, goal x y, start time time"])
-
+        self._widget.plan1_listWidget.clear()
+        self._widget.plan2_listWidget.clear()
+        self._widget.plan3_listWidget.clear()
+        for path in plan.plan_1:
+            self._widget.plan1_listWidget.addItem("start time: " + str(datetime.fromtimestamp(self.origin_time*0.001+path.poses[0].header.stamp.to_sec())) + " x: " + str(path.poses[-1].pose.position.x) + " y: " + str(path.poses[-1].pose.position.y))
+        for path in plan.plan_2:
+            self._widget.plan2_listWidget.addItem("start time: " + str(datetime.fromtimestamp(self.origin_time*0.001+path.poses[0].header.stamp.to_sec())) + " x: " + str(path.poses[-1].pose.position.x) + " y: " + str(path.poses[-1].pose.position.y))
+        for path in plan.plan_3:
+            self._widget.plan3_listWidget.addItem("start time: " + str(datetime.fromtimestamp(self.origin_time*0.001+path.poses[0].header.stamp.to_sec())) + " x: " + str(path.poses[-1].pose.position.x) + " y: " + str(path.poses[-1].pose.position.y))
 
     def _on_combobox_changed(self):
         print(self._widget.job_comboBox.currentIndex())

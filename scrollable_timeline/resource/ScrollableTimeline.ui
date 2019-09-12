@@ -254,13 +254,27 @@
   <widget class="QWidget" name="gridLayoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>440</y>
+     <x>70</x>
+     <y>430</y>
      <width>491</width>
-     <height>271</height>
+     <height>308</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
+    <item row="4" column="1">
+     <widget class="QLabel" name="plan_tb3_2_label">
+      <property name="text">
+       <string>plan: tb3_2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="plan_tb3_1_label">
+      <property name="text">
+       <string>plan: tb3_1</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="1">
      <widget class="QLabel" name="plan_tb3_0_label">
       <property name="text">
@@ -268,27 +282,13 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="plan_tb3_1_label">
-      <property name="text">
-       <string>plan: tb3_1</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QLabel" name="plan_tb3_2_label">
-      <property name="text">
-       <string>plan: tb3_2</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="1">
      <widget class="QListWidget" name="plan1_listWidget"/>
     </item>
-    <item row="1" column="2">
+    <item row="3" column="1">
      <widget class="QListWidget" name="plan2_listWidget"/>
     </item>
-    <item row="1" column="3">
+    <item row="5" column="1">
      <widget class="QListWidget" name="plan3_listWidget"/>
     </item>
    </layout>

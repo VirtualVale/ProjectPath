@@ -81,22 +81,20 @@ public:
         nav_msgs::Path path_shortest, path_created;
         for(int i=0; i<3; i++)
         {
-            if(plan[i].empty())
+            if(!checkOccupancy(i, start_time))
             {
-                if(!checkOccupancy(i, start_time))
+                path_created = createPath(i, start_time, goal);
+                travel_time = path_created.poses.back().header.stamp.toSec()-path_created.poses.front().header.stamp.toSec();
+                ROS_INFO("Resource %i needs %i secs to reach the transfered goal.", i, travel_time);
+                if(travel_time < time_min)
                 {
-                    path_created = createPath(i, start_time, goal);
-                    travel_time = path_created.poses.back().header.stamp.toSec()-path_created.poses.front().header.stamp.toSec();
-                    ROS_INFO("Resource %i needs %i secs to reach the transfered goal.", i, travel_time);
-                    if(travel_time < time_min)
-                    {
-                        time_min = travel_time;
-                        resource_min = i;
-                        path_shortest = path_created;
-                    }
+                    time_min = travel_time;
+                    resource_min = i;
+                    path_shortest = path_created;
                 }
             }
         }
+        
         if(resource_min == -1)
         {
             ROS_INFO("No resource is free!");
@@ -190,11 +188,11 @@ public:
         ROS_INFO("resource [%i]", resource);
 
         ros::Time start_time = goal->start_time.data;
-        if(checkOccupancy(resource, start_time)){
+        /*if(checkOccupancy(resource, start_time)){
             ROS_FATAL("ERROR: Resource is busy at this start time.");
             as_.setAborted();
             return false;
-        }
+        }*/
         ROS_INFO("start time [%.2lf]", start_time.toSec());
 
         ros::Time new_start_time = goal->new_start_time.data;
@@ -226,7 +224,7 @@ public:
                 if(deletePath(resource, start_time))
                 {
                     as_.setSucceeded();
-                    ROS_INFO("Job deleted")
+                    ROS_INFO("Job deleted");
                 } else {
                     as_.setAborted();
                 }
@@ -235,7 +233,25 @@ public:
                 /* code for condition */
                 break;
             case 3:
-                /* code for condition */
+                {
+                    nav_msgs::Path path = createPath(resource, start_time, goalPose);
+
+                    char answer;
+                    std::cout << "Should the path be added to the plan of the resource? (y/n)";
+                    std::cin >> answer;
+                    if(answer == 'y')
+                    {
+                        if(insertPath(resource, path))
+                        {
+                            ROS_INFO("Path inserted.");
+                            as_.setSucceeded();
+                        } else {
+                            ROS_INFO("Path insertion failed.");
+                            as_.setAborted();
+                        }
+                    }
+                }
+                
                 break;
             case 4:
                 /* code for condition */
