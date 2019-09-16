@@ -337,10 +337,7 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "planning_actionserver");
     planningAction planning_actionserver("planning_actionserver");
     ros::NodeHandle n;
-    while (ros::ok())
-    {
-        ros::spinOnce();
-    }
+    ros::spin();
     
     return 0;
 }
