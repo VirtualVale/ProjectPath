@@ -114,6 +114,11 @@ public:
     //pathcreation gives back the time the resource needs to execute the job (checked)
     nav_msgs::Path createPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped goal)
     {
+        if(checkOccupancy(resource_id, start_time))
+        {
+            ROS_ERROR("Resource busy.");
+        }
+
         actionlib::SimpleActionClient<chronos::PTSAction> ac("PTS", true);
         ac.waitForServer();
             
@@ -165,7 +170,25 @@ public:
             as_.setAborted();
             return false;
         }
-        ROS_INFO("Task: [%i]", task);
+
+        std::string task_expression;
+
+        switch (task)
+        {
+            case 0:
+                task_expression = "create Job";
+                break;
+            case 1:
+                task_expression = "delete Path";
+                break;
+            case 3:
+                task_expression = "create Path";
+                break;
+            default:
+                ROS_ERROR("task expression not available");
+        }
+
+        ROS_INFO("Task: [%s]", task_expression);
 
         //Resources 1,2,3 are mapped to 0,1,2 for computation reasons
         int resource = (goal-> resource_number) - 1;
@@ -222,11 +245,6 @@ public:
                 break;
             case 3:
                 {
-                    if(checkOccupancy(resource, start_time))
-                    {
-                        ROS_ERROR("Resource busy.");
-                        as_.setAborted();
-                    } else {
                         nav_msgs::Path path = createPath(resource, start_time, goalPose);
 
                         char answer;
@@ -242,7 +260,6 @@ public:
                                 as_.setAborted();
                             }
                         }
-                    }
                 }
                 
                 break;

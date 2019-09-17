@@ -1,15 +1,22 @@
 #include "ros/ros.h"
 #include "chronos/collision_service.h"
-#include "std_msgs/Float64MultiArray.h"
+#include "geometry_msgs/PoseStamped.h"
 
-std_msgs::Float64MultiArray distance_check(nav_msgs::Path path_sup, nav_msgs::Path path_inf);
+std::vector<geometry_msgs::PoseStamped> distance_check(nav_msgs::Path path_sup, nav_msgs::Path path_inf);
 bool time_check(geometry_msgs::PoseStamped pose_sup, geometry_msgs::PoseStamped pose_inf);
 float euclideanDistance(geometry_msgs::PoseStamped a, geometry_msgs::PoseStamped b);
 
 bool check4Collisions(chronos::collision_service::Request &req, chronos::collision_service::Response &res){
-    std_msgs::Float64MultiArray collisions;
+    std::vector<geometry_msgs::PoseStamped> collisions;
     collisions = distance_check(req.superior, req.inferior);
-    res.collisionTimes = collisions;
+    if(collisions.empty())
+    {
+        res.collision = false;
+        return true;
+    }
+    res.collision = true;
+    res.firstCollision = collisions.front();
+    res.lastCollision = collisions.back();
     return true;
 }
 
@@ -25,15 +32,15 @@ int main(int argc, char **argv)
     return 0;
 }
 
-std_msgs::Float64MultiArray distance_check(nav_msgs::Path path_sup, nav_msgs::Path path_inf){
+std::vector<geometry_msgs::PoseStamped> distance_check(nav_msgs::Path path_sup, nav_msgs::Path path_inf){
 
-    std_msgs::Float64MultiArray collisionArray;
+    std::vector<geometry_msgs::PoseStamped> collisionArray;
     for(int i=0; i<path_inf.poses.size();i++){  
         for(int j=0; j<path_sup.poses.size();j++){
             double distance = euclideanDistance(path_inf.poses[i], path_sup.poses[j]);
             if(distance < 0.096){
                 if(time_check(path_sup.poses[j],path_inf.poses[i])){
-                    collisionArray.data.push_back(path_inf.poses[i].header.stamp.toSec());
+                    collisionArray.push_back(path_inf.poses[i]);
                 }
             }
         }

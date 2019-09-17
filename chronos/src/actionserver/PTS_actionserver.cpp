@@ -7,7 +7,7 @@
 #include "chronos/collision_service.h"
 #include <chronos/PTSAction.h>
 #include <geometry_msgs/Pose.h>
-#include <iostream>
+#include <string>
 #include "chronos/plan.h"
 
 
@@ -57,6 +57,78 @@ public:
 
     ~PTSAction(void)
     {
+    }
+
+    bool collisionChecking(nav_msgs::Path created_path)
+    {
+        //COLLISIONCHECKING
+        chronos::collision_service csrv;
+        csrv.request.superior = created_path;
+        std::vector<geometry_msgs::PoseStamped> first_collisions;
+        std::vector<geometry_msgs::PoseStamped> last_collisions;
+        
+        //check possible collisions with paths from bigger resource numbers
+        for(int i=resource+1; i<3; i++)
+        {
+            for(int j=0; j<plan[i].size(); j++)
+            {
+                ROS_INFO("COLLISIONCHECKING: plan_nr [%i], resource [%i]", j, i);
+                if(!plan[i].empty())
+                {
+                    csrv.request.inferior = plan[i][j];
+                    if(collision_client.call(csrv))
+                    {
+                        //if bool true so collision is really there
+                        ROS_INFO("firstCollision #: %i", csrv.response.collision);
+                        first_collisions.push_back(csrv.response.firstCollision);
+                        last_collisions.push_back(csrv.response.lastCollision);
+                    }
+                    else
+                    {
+                        ROS_INFO("ERROR: Collisionchecking failed.");
+                    }
+                }
+            }
+        }
+
+        //check possible collision with paths with smaller resource numbers
+        for(int i=resource-1; i>=0; i--)
+        {
+            for(int j=0; j<plan[i].size(); j++)
+            {
+                ROS_INFO("COLLISIONCHECKING: plan_nr [%i], resource [%i]", j, i);
+                if(!plan[i].empty())
+                {
+                    csrv.request.inferior = plan[i][j];
+                    if(collision_client.call(csrv))
+                    {
+                        ROS_INFO("firstCollision #: %i", csrv.response.collision);
+                        first_collisions.push_back(csrv.response.firstCollision);
+                        last_collisions.push_back(csrv.response.lastCollision);
+                    }
+                    else
+                    {
+                        ROS_INFO("ERROR: Collisionchecking failed.");
+                    }
+                }
+            }
+        }
+
+        int first_collision_position;
+        double min_time;
+
+        for(int i=0; i<first_collisions.size(); i++)
+        {
+            if(i==0 || first_collisions[i].header.stamp.toSec() < min_time)
+            {
+                min_time = first_collisions[i].header.stamp.toSec();
+                first_collision_position = i;
+            }
+        }
+
+        // now slice the path up to the found position and create path for the rest
+
+        return paths
     }
 
     bool executeCB(const chronos::PTSGoalConstPtr &goal)
@@ -119,61 +191,15 @@ public:
         ROS_INFO("goal x [%.2lf] y [%.2lf]", goalPose.pose.position.x, goalPose.pose.position.y);
 
         //PATHCREATION
-        nav_msgs::Path createdPath;
-        createdPath = createPath(startPose, goalPose, startTime, path_client, time_client);
-        ROS_INFO("goal time [%.2lf]", createdPath.poses.back().header.stamp.toSec());
+        nav_msgs::Path created_path;
+        created_path = createPath(startPose, goalPose, startTime, path_client, time_client);
+        ROS_INFO("goal time [%.2lf]", created_path.poses.back().header.stamp.toSec());
         
+        collisionChecking();
 
-        //COLLISIONCHECKING
-        chronos::collision_service csrv;
-        csrv.request.superior = createdPath;
-        
-        //check possible collisions with paths from bigger resource numbers
-        for(int i=resource+1; i<3; i++)
-        {
-            for(int j=0; j<plan[i].size(); j++)
-            {
-                ROS_INFO("COLLISIONCHECKING: plan_nr [%i], resource [%i]", j, i);
-                if(!plan[i].empty())
-                {
-                    csrv.request.inferior = plan[i][j];
-                    if(collision_client.call(csrv))
-                    {
-                        ROS_INFO("Collisions #: %lu", csrv.response.collisionTimes.data.size());
-                    }
-                    else
-                    {
-                        ROS_INFO("ERROR: Collisionchecking failed.");
-                    }
-                }
-            }
-        }
 
-        //check possible collision with paths with smaller resource numbers
-        for(int i=resource-1; i>=0; i--)
-        {
-            for(int j=0; j<plan[i].size(); j++)
-            {
-                ROS_INFO("COLLISIONCHECKING: plan_nr [%i], resource [%i]", j, i);
-                if(!plan[i].empty())
-                {
-                    csrv.request.inferior = plan[i][j];
-                    if(collision_client.call(csrv))
-                    {
-                        ROS_INFO("Collisions #: %lu", csrv.response.collisionTimes.data.size());
-                    }
-                    else
-                    {
-                        ROS_INFO("ERROR: Collisionchecking failed.");
-                    }
-                }
-            }
-        }
-
-        //REACTION TO POSSIBLE COLLISIONS
-
-        result_.path = createdPath;
-        result_.travel_time = abs(createdPath.poses.front().header.stamp.toSec() - createdPath.poses.back().header.stamp.toSec());
+        result_.path = created_path;
+        result_.travel_time = abs(created_path.poses.front().header.stamp.toSec() - created_path.poses.back().header.stamp.toSec());
         as_.setSucceeded(result_);
         return true;
     }

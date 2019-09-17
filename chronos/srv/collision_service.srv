@@ -1,4 +1,6 @@
 nav_msgs/Path superior
 nav_msgs/Path inferior
 ---
-std_msgs/Float64MultiArray collisionTimes
+bool collision
+geometry_msgs/PoseStamped firstCollision
+geometry_msgs/PoseStamped lastCollision

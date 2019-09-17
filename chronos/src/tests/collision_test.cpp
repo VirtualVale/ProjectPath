@@ -1,6 +1,8 @@
 #include "ros/ros.h"
 #include "chronos/collision_service.h"
 #include "chronos/time_service.h"
+#include "geometry_msgs/PoseStamped.h"
+
 
 int main(int argc, char **argv)
 {
@@ -102,11 +104,7 @@ int main(int argc, char **argv)
     csrv.request.inferior = path2;
 
     if(cclient.call(csrv)){
-        if(csrv.response.collisionTimes.data.size() != 0){
-            for(int i=0; i<csrv.response.collisionTimes.data.size(); i++){
-                ROS_INFO("Collision at Time [%.2lf]", csrv.response.collisionTimes.data[i]);
-            }
-        }
+        ROS_INFO("firstCollision at time: %lf", csrv.response.firstCollision.header.stamp);
     } else {
         ROS_INFO("Collisioncheck failed!");
     }
