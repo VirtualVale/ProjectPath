@@ -6,7 +6,7 @@ byte priority
 ---
 #result definition
 int32 travel_time
-nav_msgs/Path path
+nav_msgs/Path path_collisionfree
 ---
 #feedback
 int32 travel_time

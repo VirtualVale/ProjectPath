@@ -59,7 +59,7 @@ public:
     {
     }
 
-    bool collisionChecking(nav_msgs::Path created_path)
+    nav_msgs::Path collisionChecking(nav_msgs::Path created_path, int resource)
     {
         //COLLISIONCHECKING
         chronos::collision_service csrv;
@@ -78,10 +78,14 @@ public:
                     csrv.request.inferior = plan[i][j];
                     if(collision_client.call(csrv))
                     {
-                        //if bool true so collision is really there
-                        ROS_INFO("firstCollision #: %i", csrv.response.collision);
-                        first_collisions.push_back(csrv.response.firstCollision);
-                        last_collisions.push_back(csrv.response.lastCollision);
+                        if(csrv.response.collision)
+                        {
+                            //if bool true so collision is really there
+                            ROS_INFO("bigger resource nr - firstCollision #: %i - x %.2lf y %.2lf - last x %.2lf y %.2lf", csrv.response.collision, csrv.response.firstCollision.pose.position.x, csrv.response.firstCollision.pose.position.x, csrv.response.lastCollision.pose.position.x, csrv.response.lastCollision.pose.position.y);
+                            first_collisions.push_back(csrv.response.firstCollision);
+                            last_collisions.push_back(csrv.response.lastCollision);
+                        }
+                        
                     }
                     else
                     {
@@ -102,9 +106,12 @@ public:
                     csrv.request.inferior = plan[i][j];
                     if(collision_client.call(csrv))
                     {
-                        ROS_INFO("firstCollision #: %i", csrv.response.collision);
-                        first_collisions.push_back(csrv.response.firstCollision);
-                        last_collisions.push_back(csrv.response.lastCollision);
+                        if(csrv.response.collision)
+                        {
+                            ROS_INFO("smaller resource nr - firstCollision #: %i - x %.2lf y %.2lf - last x %.2lf y %.2lf", csrv.response.collision, csrv.response.firstCollision.pose.position.x, csrv.response.firstCollision.pose.position.x, csrv.response.lastCollision.pose.position.x, csrv.response.lastCollision.pose.position.y);
+                            first_collisions.push_back(csrv.response.firstCollision);
+                            last_collisions.push_back(csrv.response.lastCollision);
+                        }
                     }
                     else
                     {
@@ -127,8 +134,19 @@ public:
         }
 
         // now slice the path up to the found position and create path for the rest
+        if(first_collisions.empty())
+        {
+            ROS_INFO("All Collisions resolved or no collisions.");
+            return created_path;
+        } else {
+            ROS_ERROR("Alarma! got some collisions! We need to do some slicing at position %i and time %lf", first_collision_position, min_time);
+            nav_msgs::Path path_collisionfree;
+            path_collisionfree = created_path;
+            path_collisionfree.poses.erase(path_collisionfree.poses.begin() + first_collision_position, path_collisionfree.poses.end());
 
-        return paths
+            slice = createPath(first_collisions[first_collision_position], created_path.poses.back(), first_collisions[first_collision_position].header.stamp, path_client, time_client);
+            slice = collisionChecking(slice);
+        }
     }
 
     bool executeCB(const chronos::PTSGoalConstPtr &goal)
@@ -195,11 +213,10 @@ public:
         created_path = createPath(startPose, goalPose, startTime, path_client, time_client);
         ROS_INFO("goal time [%.2lf]", created_path.poses.back().header.stamp.toSec());
         
-        collisionChecking();
+        nav_msgs::Path path_collisionfree = collisionChecking(created_path, resource);
 
-
-        result_.path = created_path;
-        result_.travel_time = abs(created_path.poses.front().header.stamp.toSec() - created_path.poses.back().header.stamp.toSec());
+        result_.path_collisionfree = path_collisionfree;
+        result_.travel_time = abs(path_collisionfree.poses.front().header.stamp.toSec() - path_collisionfree.poses.back().header.stamp.toSec());
         as_.setSucceeded(result_);
         return true;
     }

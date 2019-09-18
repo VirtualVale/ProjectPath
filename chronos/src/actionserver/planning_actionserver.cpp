@@ -140,7 +140,7 @@ public:
             ROS_ERROR("Action did not finish before the time out.");
         }
         chronos::PTSResult pts_result = *(ac.getResult());
-        return pts_result.path;
+        return pts_result.path_collisionfree;
     }
 
     //delete the path at the transfered start time (checked)
@@ -188,7 +188,7 @@ public:
                 ROS_ERROR("task expression not available");
         }
 
-        ROS_INFO("Task: [%s]", task_expression);
+        ROS_INFO("Task: [%s]", task_expression.c_str());
 
         //Resources 1,2,3 are mapped to 0,1,2 for computation reasons
         int resource = (goal-> resource_number) - 1;

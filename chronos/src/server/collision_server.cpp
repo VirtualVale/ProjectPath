@@ -12,6 +12,7 @@ bool check4Collisions(chronos::collision_service::Request &req, chronos::collisi
     if(collisions.empty())
     {
         res.collision = false;
+        ROS_INFO("no collisions");
         return true;
     }
     res.collision = true;
