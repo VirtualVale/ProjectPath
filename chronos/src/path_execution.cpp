@@ -19,6 +19,8 @@ void planCallback(const chronos::plan::ConstPtr& msg)
     plan[2] = msg -> plan_3;
     //plan[(*msg).resource_number] = (*msg).resource_plan;
 
+    //new execution plan?
+    
     nav_msgs::Path slice;
     for(int i=0; i<3;i++)
         {
