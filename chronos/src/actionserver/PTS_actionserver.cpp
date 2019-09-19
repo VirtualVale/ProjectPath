@@ -18,6 +18,8 @@ std::vector<nav_msgs::Path>  plan[3];
 bool occupiedBool(ros::Time time, std::vector<nav_msgs::Path> resource_plan);
 nav_msgs::Path createPath( geometry_msgs::PoseStamped start, geometry_msgs::PoseStamped goal, ros::Time startTime, ros::ServiceClient path_client, ros::ServiceClient time_client);
 nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> plan);
+int poseIdAtTime(ros::Time currentTime, nav_msgs::Path currentPath);
+
 
 class PTSAction
 {
@@ -122,13 +124,14 @@ public:
         }
 
         int first_collision_position;
-        double min_time;
+        ros::Time min_time;
 
         for(int i=0; i<first_collisions.size(); i++)
         {
-            if(i==0 || first_collisions[i].header.stamp.toSec() < min_time)
+            if(i==0 || first_collisions[i].header.stamp < min_time)
             {
-                min_time = first_collisions[i].header.stamp.toSec();
+                min_time = first_collisions[i].header.stamp;
+                
                 first_collision_position = i;
             }
         }
@@ -139,13 +142,17 @@ public:
             ROS_INFO("All Collisions resolved or no collisions.");
             return created_path;
         } else {
-            ROS_ERROR("Alarma! got some collisions! We need to do some slicing at position %i and time %lf", first_collision_position, min_time);
+            ROS_ERROR("Alarma! got some collisions! We need to do some slicing at position %i and time %lf", first_collision_position, min_time.toSec());
             nav_msgs::Path path_collisionfree;
             path_collisionfree = created_path;
-            path_collisionfree.poses.erase(path_collisionfree.poses.begin() + first_collision_position, path_collisionfree.poses.end());
+            int threshold = poseIdAtTime(min_time, created_path);
+            path_collisionfree.poses.erase(path_collisionfree.poses.begin() + threshold, path_collisionfree.poses.end());
+            path_collisionfree.poses.back().header.seq = 1;
 
-            slice = createPath(first_collisions[first_collision_position], created_path.poses.back(), first_collisions[first_collision_position].header.stamp, path_client, time_client);
-            slice = collisionChecking(slice);
+            nav_msgs::Path slice = createPath( path_collisionfree.poses.back(), created_path.poses.back(),last_collisions[first_collision_position].header.stamp , path_client, time_client);
+            slice = collisionChecking(slice, resource);
+            path_collisionfree.poses.insert(path_collisionfree.poses.end(), slice.poses.begin(), slice.poses.end());
+            return path_collisionfree;
         }
     }
 
@@ -309,4 +316,19 @@ nav_msgs::Path createPath( geometry_msgs::PoseStamped start, geometry_msgs::Pose
     }    
 
     return tsrv.response.path_timestamped;
+}
+
+int poseIdAtTime(ros::Time currentTime, nav_msgs::Path currentPath)
+{
+    int poseID = 0;
+    double diff, optDiff = 100.00;
+    for(int i=0; i<currentPath.poses.size(); i++){
+      diff = abs(currentTime.toSec() - currentPath.poses[i].header.stamp.toSec());
+      if(diff < optDiff){
+        optDiff = diff;
+        poseID = i;
+      }
+      //ROS_INFO("for-Loop(currentPose): i = %i, optDiff = %lf, diff = %lf, poseID = %i", i, optDiff, diff, poseID);
+    }
+    return poseID;
 }

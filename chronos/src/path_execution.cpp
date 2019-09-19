@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "chronos/visualization.h"
+#include "chronos/plan.h"
 #include "nav_msgs/Path.h"
 #include "ros/time.h"
 #include <std_msgs/Time.h>
@@ -11,10 +11,35 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 
 std::vector<nav_msgs::Path> plan[3];
 
-void planCallback(const chronos::visualization::ConstPtr& msg)
+void planCallback(const chronos::plan::ConstPtr& msg)
 {
     ROS_INFO("planCallback");
-    plan[(*msg).resource_number] = (*msg).resource_plan;
+    plan[0] = msg -> plan_1;
+    plan[1] = msg -> plan_2;
+    plan[2] = msg -> plan_3;
+    //plan[(*msg).resource_number] = (*msg).resource_plan;
+
+    nav_msgs::Path slice;
+    for(int i=0; i<3;i++)
+        {
+            for(int j=0; j<plan[i].size();j++)
+            {
+                for(int k=0; k<plan[i][j].poses.size(); k++)
+                {
+                    if(plan[i][j].poses[k].header.seq == 1)
+                    {
+                        slice.header = plan[i][j].header;
+                        slice.poses.insert(slice.poses.begin(), plan[i][j].poses.begin(), plan[i][j].poses.begin()+k);
+                        plan[i].push_back(slice);
+                        plan[i][j].poses.erase(plan[i][j].poses.begin(), plan[i][j].poses.begin()+k);
+                        slice = plan[i][j];
+                        plan[i].push_back(slice);
+                        plan[i].erase(plan[i].begin() + j);
+                        break;
+                    }
+                }   
+            }
+        }
 }
 
 int main(int argc, char *argv[])
@@ -68,8 +93,7 @@ int main(int argc, char *argv[])
                             ac2.sendGoal(goal);
                             break;
                         default:
-                            /* Default Code */
-                            ac.sendGoal(goal);
+                            ROS_ERROR("switch didnt work!");
                     }
                     
                     /*
