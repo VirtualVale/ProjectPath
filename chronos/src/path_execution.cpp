@@ -28,14 +28,15 @@ void planCallback(const chronos::plan::ConstPtr& msg)
                 {
                     if(plan[i][j].poses[k].header.seq == 1)
                     {
-                        slice.header = plan[i][j].header;
+                        ROS_ERROR("path is sliced at resource %i, path %i and pose %i", i, j, k);
+                        /*slice.header = plan[i][j].header;
                         slice.poses.insert(slice.poses.begin(), plan[i][j].poses.begin(), plan[i][j].poses.begin()+k);
                         plan[i].push_back(slice);
                         plan[i][j].poses.erase(plan[i][j].poses.begin(), plan[i][j].poses.begin()+k);
                         slice = plan[i][j];
                         plan[i].push_back(slice);
                         plan[i].erase(plan[i].begin() + j);
-                        break;
+                        break;*/
                     }
                 }   
             }
