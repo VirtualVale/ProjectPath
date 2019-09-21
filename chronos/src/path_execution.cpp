@@ -30,15 +30,20 @@ void planCallback(const chronos::plan::ConstPtr& msg)
                 {
                     if(plan[i][j].poses[k].header.seq == 1)
                     {
+                        slice.poses.clear();
                         ROS_ERROR("path is sliced at resource %i, path %i and pose %i", i, j, k);
-                        /*slice.header = plan[i][j].header;
-                        slice.poses.insert(slice.poses.begin(), plan[i][j].poses.begin(), plan[i][j].poses.begin()+k);
+                        slice.header = plan[i][j].header;
+                        slice.poses.insert(slice.poses.begin(), plan[i][j].poses.begin(), plan[i][j].poses.begin()+k+1);
+                        ROS_INFO("old path: %i, new path: %i, old plan size: %i", plan[i][j].poses.size(), slice.poses.size(), plan[i].size());
+                        ROS_INFO("last pose seq %i", slice.poses.back().header.seq);
+                        slice.poses.back().header.seq = 0;
                         plan[i].push_back(slice);
-                        plan[i][j].poses.erase(plan[i][j].poses.begin(), plan[i][j].poses.begin()+k);
+                        ROS_INFO("new plan size: %i", plan[i].size());
+                        plan[i][j].poses.erase(plan[i][j].poses.begin(), plan[i][j].poses.begin()+k+1);
                         slice = plan[i][j];
                         plan[i].push_back(slice);
                         plan[i].erase(plan[i].begin() + j);
-                        break;*/
+                        break;
                     }
                 }   
             }
