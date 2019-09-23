@@ -18,8 +18,6 @@ void planCallback(const chronos::plan::ConstPtr& msg)
     plan[1] = msg -> plan_2;
     plan[2] = msg -> plan_3;
     //plan[(*msg).resource_number] = (*msg).resource_plan;
-
-    //new execution plan?
     
     nav_msgs::Path slice;
     for(int i=0; i<3;i++)
@@ -34,11 +32,11 @@ void planCallback(const chronos::plan::ConstPtr& msg)
                         ROS_ERROR("path is sliced at resource %i, path %i and pose %i", i, j, k);
                         slice.header = plan[i][j].header;
                         slice.poses.insert(slice.poses.begin(), plan[i][j].poses.begin(), plan[i][j].poses.begin()+k+1);
-                        ROS_INFO("old path: %i, new path: %i, old plan size: %i", plan[i][j].poses.size(), slice.poses.size(), plan[i].size());
+                        ROS_INFO("old path: %lu, new path: %lu, old plan size: %lu", plan[i][j].poses.size(), slice.poses.size(), plan[i].size());
                         ROS_INFO("last pose seq %i", slice.poses.back().header.seq);
                         slice.poses.back().header.seq = 0;
                         plan[i].push_back(slice);
-                        ROS_INFO("new plan size: %i", plan[i].size());
+                        ROS_INFO("new plan size: %lu", plan[i].size());
                         plan[i][j].poses.erase(plan[i][j].poses.begin(), plan[i][j].poses.begin()+k+1);
                         slice = plan[i][j];
                         plan[i].push_back(slice);
