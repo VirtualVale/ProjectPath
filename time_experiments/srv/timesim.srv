@@ -1,4 +1,0 @@
-nav_msgs/Path original_path
-float64 average_velocity
----
-nav_msgs/Path timesim_path

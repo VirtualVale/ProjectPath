@@ -10,11 +10,13 @@ int main(int argc, char **argv)
     ros::Publisher path_pub = n.advertise<nav_msgs::Path>("path_test", 1000);
     chronos::path_service psrv;
 
+    //input check
     if(argc != 5 || isdigit(atoi(argv[1])) || isdigit(atoi(argv[2])) || isdigit(atoi(argv[3])) || isdigit(atoi(argv[4]))){
         ROS_INFO("Input Parameters are wrong!\nstart position:\nx\ny\ngoal position:\nx\ny");
         return 1;
     }
 
+    //server call
     psrv.request.start.header.frame_id = "map";
     psrv.request.start.pose.position.x = atoi(argv[1]);
     psrv.request.start.pose.position.y = atoi(argv[2]);
@@ -27,8 +29,7 @@ int main(int argc, char **argv)
 
     if(client.call(psrv))
     {
-        ROS_INFO("Path size: %lu\nPath published on the '/path_service' topic.\n", psrv.response.path.poses.size());
-        path_pub.publish(psrv.response.path);
+        ROS_INFO("Path size: %lu\nPath published on the '/path_test' topic.\n", psrv.response.path.poses.size());
 
     } else {
         ROS_INFO("Failed");

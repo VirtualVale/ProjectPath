@@ -33,7 +33,6 @@ int main(int argc, char **argv)
 
     for(int i = 0; i < atoi(argv[1]); ++i){
 
-        pose_variable.header.seq = i;
         pose_variable.header.stamp.sec = 100;
         pose_variable.header.frame_id = "map";
 
