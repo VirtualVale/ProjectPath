@@ -12,10 +12,10 @@ bool check4Collisions(chronos::collision_service::Request &req, chronos::collisi
     if(collisions.empty())
     {
         res.collision = false;
-        ROS_INFO("no collisions");
         return true;
     }
     res.collision = true;
+    ROS_INFO("There is a collision.");
     res.firstCollision = collisions.front();
     res.lastCollision = collisions.back();
     return true;
@@ -51,10 +51,12 @@ std::vector<geometry_msgs::PoseStamped> distance_check(nav_msgs::Path path_sup, 
 
 bool time_check(geometry_msgs::PoseStamped pose_sup, geometry_msgs::PoseStamped pose_inf){
 
-    double temporal_distance = fabs(pose_inf.header.stamp.toSec() - pose_sup.header.stamp.toSec());
-    ROS_INFO("%f seconds.nsecs between the Poses.", temporal_distance);
-    
-    if(temporal_distance < 0.627)return true;
+    double duration = fabs(pose_inf.header.stamp.toSec() - pose_sup.header.stamp.toSec());
+    if(duration < 0.627)
+    {
+        ROS_INFO("Duration %lf is critical", duration);
+        return true;
+    }
     return false;
 }
 

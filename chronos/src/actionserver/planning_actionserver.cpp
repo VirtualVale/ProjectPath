@@ -82,7 +82,7 @@ public:
             {
                 path_created = createPath(i, start_time, goal);
                 travel_time = path_created.poses.back().header.stamp.toSec()-path_created.poses.front().header.stamp.toSec();
-                ROS_INFO("Resource %i needs %i secs to reach the transfered goal.", i, travel_time);
+                ROS_INFO("Resource %i needs %lf secs to reach the transfered goal.", i, travel_time);
                 if(travel_time < time_min)
                 {
                     time_min = travel_time;
@@ -106,6 +106,7 @@ public:
             if(!insertPath(resource_min, path_shortest))
             {
                 ROS_ERROR("Insertion failed.");
+                return false;
             }
         }
         return true;
@@ -215,12 +216,6 @@ public:
         goalPose.pose.position.y = goal->goal.pose.position.y;
         //TODO check the input
         ROS_INFO("goal x [%.2lf] y [%.2lf]", goalPose.pose.position.x, goalPose.pose.position.y);
-
-        geometry_msgs::PoseStamped new_goalPose;
-        new_goalPose.pose.position.x = goal->new_goal.pose.position.x;
-        new_goalPose.pose.position.y = goal->new_goal.pose.position.y;
-        //TODO check the input
-        ROS_INFO("new goal x [%.2lf] y [%.2lf]", new_goalPose.pose.position.x, new_goalPose.pose.position.y);
 
         switch (task)
         {
@@ -353,7 +348,7 @@ int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "planning_actionserver");
     planningAction planning_actionserver("planning_actionserver");
-    ros::NodeHandle n;
+    ROS_INFO("Ready to receive jobs.");
     ros::spin();
     
     return 0;
