@@ -1,5 +1,5 @@
 <library path="src">
-  <class name="Scrollable Timeline" type="scrollable_timeline.timeline_module.ScrollableTimeline" base_class_type="rqt_gui_py::Plugin">
+  <class name="Chronos Rqt" type="chronos_rqt.timeline_module.ChronosRqt" base_class_type="rqt_gui_py::Plugin">
     <description>
       A slide control for the path planning system in the robot simulation.
     </description>
@@ -12,7 +12,7 @@
         <label>Subgroup</label>
       </group>
       -->
-      <label>Scrollable Timeline</label>
+      <label>Chronos Rqt</label>
       <icon type="theme">system-help</icon>
       <statustip>They see me scrolling...</statustip>
     </qtgui>

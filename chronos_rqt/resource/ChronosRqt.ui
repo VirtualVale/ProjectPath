@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScrollableTimeline</class>
- <widget class="QWidget" name="ScrollableTimeline">
+ <class>ChronosRqt</class>
+ <widget class="QWidget" name="ChronosRqt">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>956</width>
-    <height>741</height>
+    <width>702</width>
+    <height>850</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ScrollableTimeline</string>
+   <string>ChronosRqt</string>
   </property>
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>40</y>
+     <x>40</x>
+     <y>20</y>
      <width>571</width>
      <height>151</height>
     </rect>
@@ -30,6 +30,9 @@
       <width>431</width>
       <height>29</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Slide to change displayed time.</string>
     </property>
     <property name="minimum">
      <number>0</number>
@@ -59,42 +62,24 @@
       <height>27</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>Set the displayed time to the current time.</string>
+    </property>
     <property name="text">
      <string>current time</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>240</x>
-      <y>10</y>
-      <width>91</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>15</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>PTS</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <property name="margin">
-     <number>0</number>
     </property>
    </widget>
    <widget class="QDateTimeEdit" name="input_dateTimeEdit">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>50</y>
+      <x>270</x>
+      <y>70</y>
       <width>194</width>
       <height>27</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Change the displayed time.</string>
     </property>
     <property name="displayFormat">
      <string>dd.MM.yy HH:mm:ss</string>
@@ -109,8 +94,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>50</y>
+      <x>270</x>
+      <y>40</y>
       <width>194</width>
       <height>27</height>
      </rect>
@@ -120,6 +105,19 @@
     </property>
     <property name="calendarPopup">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>40</y>
+      <width>151</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Displayed time in rviz</string>
     </property>
    </widget>
   </widget>
@@ -132,6 +130,12 @@
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuChornos">
+    <property name="title">
+     <string>Chornos</string>
+    </property>
+   </widget>
+   <addaction name="menuChornos"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="geometry">
@@ -177,6 +181,9 @@
     </property>
     <item row="0" column="0">
      <widget class="QSpinBox" name="resource_spinBox">
+      <property name="toolTip">
+       <string/>
+      </property>
       <property name="minimum">
        <number>1</number>
       </property>
@@ -187,6 +194,9 @@
     </item>
     <item row="5" column="1">
      <widget class="QLabel" name="position_y_label">
+      <property name="toolTip">
+       <string>Goal for job/path</string>
+      </property>
       <property name="text">
        <string>Y - Position</string>
       </property>
@@ -194,16 +204,26 @@
     </item>
     <item row="0" column="1">
      <widget class="QLabel" name="resource_label">
+      <property name="toolTip">
+       <string>Number of Resource used for creating and deleting paths.</string>
+      </property>
       <property name="text">
        <string>Resource Number</string>
       </property>
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QDoubleSpinBox" name="position_x_doubleSpinBox"/>
+     <widget class="QDoubleSpinBox" name="position_x_doubleSpinBox">
+      <property name="toolTip">
+       <string/>
+      </property>
+     </widget>
     </item>
     <item row="8" column="1">
      <widget class="QPushButton" name="execute_pushButton">
+      <property name="toolTip">
+       <string>Executes the task chosen in the left field with the parameters from above. (resource, x, y and start time)</string>
+      </property>
       <property name="text">
        <string>Execute</string>
       </property>
@@ -211,6 +231,9 @@
     </item>
     <item row="3" column="1">
      <widget class="QLabel" name="position_x_label">
+      <property name="toolTip">
+       <string>Goal for job/path</string>
+      </property>
       <property name="text">
        <string>X - Position</string>
       </property>
@@ -218,16 +241,26 @@
     </item>
     <item row="7" column="1">
      <widget class="QLabel" name="start_time_label">
+      <property name="toolTip">
+       <string>Represents the time used to plan or delete paths/jobs.</string>
+      </property>
       <property name="text">
-       <string>StartTime</string>
+       <string>Time</string>
       </property>
      </widget>
     </item>
     <item row="5" column="0">
-     <widget class="QDoubleSpinBox" name="position_y_doubleSpinBox"/>
+     <widget class="QDoubleSpinBox" name="position_y_doubleSpinBox">
+      <property name="toolTip">
+       <string/>
+      </property>
+     </widget>
     </item>
     <item row="7" column="0">
      <widget class="QDateTimeEdit" name="startTime_dateTimeEdit">
+      <property name="toolTip">
+       <string/>
+      </property>
       <property name="currentSection">
        <enum>QDateTimeEdit::DaySection</enum>
       </property>
@@ -241,6 +274,9 @@
     </item>
     <item row="8" column="0">
      <widget class="QComboBox" name="job_comboBox">
+      <property name="toolTip">
+       <string/>
+      </property>
       <property name="editable">
        <bool>false</bool>
       </property>
@@ -254,8 +290,8 @@
   <widget class="QWidget" name="gridLayoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>430</y>
+     <x>20</x>
+     <y>530</y>
      <width>641</width>
      <height>308</height>
     </rect>
@@ -264,21 +300,21 @@
     <item row="4" column="1">
      <widget class="QLabel" name="plan_tb3_2_label">
       <property name="text">
-       <string>plan: tb3_2</string>
+       <string>Plan 3</string>
       </property>
      </widget>
     </item>
     <item row="2" column="1">
      <widget class="QLabel" name="plan_tb3_1_label">
       <property name="text">
-       <string>plan: tb3_1</string>
+       <string>Plan 2</string>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
      <widget class="QLabel" name="plan_tb3_0_label">
       <property name="text">
-       <string>plan: tb3_0</string>
+       <string>Plan 1</string>
       </property>
      </widget>
     </item>
@@ -307,6 +343,9 @@
    </property>
    <property name="mouseTracking">
     <bool>true</bool>
+   </property>
+   <property name="toolTip">
+    <string>Click anywhere on the map and next on the refresh button to set a position as goal for a job/path.</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::Box</enum>
@@ -345,8 +384,116 @@
      <height>51</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Refreshes the x- and y-position to the clicked position on the map.</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
    <property name="text">
     <string>refresh</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>30</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Chronos</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>410</y>
+     <width>531</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>1. Define goal with the map and the refresh button or manual input in x and y</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>430</y>
+     <width>301</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>2. Choose the time in the Time input</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>450</y>
+     <width>511</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>3. Determine if the resource should be chosen automatically -&gt; create Job </string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>470</y>
+     <width>471</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>(or if creating path or deleting job use the resource number input)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>490</y>
+     <width>301</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>4. Execute the chosen task with the button</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>510</y>
+     <width>691</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>New paths will be added to the plans beyond and can be visualized with the tools on the top</string>
    </property>
   </widget>
  </widget>

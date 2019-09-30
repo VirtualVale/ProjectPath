@@ -1,4 +1,7 @@
-possible problem cases not tested
+problems
 
 delete job with wrong input
-two paths colliding twice 
+time calculation with time server
+turn around of robots is not in the calculation
+plan list in rqt: time is wrong
+ 

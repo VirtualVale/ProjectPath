@@ -2,9 +2,9 @@
 
 import sys
 
-from scrollable_timeline.timeline_module import ScrollableTimeline
+from chronos_rqt.timeline_module import ChronosRqt
 from rqt_gui.main import Main
 
-plugin = 'scrollable_timeline'
+plugin = 'chronos_rqt'
 main = Main(filename=plugin)
 sys.exit(main.main(standalone=plugin))

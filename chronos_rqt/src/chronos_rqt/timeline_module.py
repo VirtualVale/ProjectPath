@@ -27,12 +27,12 @@ class MyQWidget(QWidget):
         print(event.pos())
 
 
-class ScrollableTimeline(Plugin):
+class ChronosRqt(Plugin):
 
     def __init__(self, context):
-        super(ScrollableTimeline, self).__init__(context)
+        super(ChronosRqt, self).__init__(context)
         # Give QObjects reasonable names
-        self.setObjectName('ScrollableTimeline')
+        self.setObjectName('ChronosRqt')
 
         # Process standalone plugin command-line arguments
         from argparse import ArgumentParser
@@ -51,7 +51,7 @@ class ScrollableTimeline(Plugin):
         self._y = 0.0
         self._widget = MyQWidget()
         # Get path to UI file which should be in the "resource" folder of this package
-        ui_file = os.path.join(rospkg.RosPack().get_path('scrollable_timeline'), 'resource', 'ScrollableTimeline.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('chronos_rqt'), 'resource', 'ChronosRqt.ui')
         # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
         # Give QObjects reasonable names

@@ -6,8 +6,7 @@ Panels:
       Expanded:
         - /TF1/Frames1
         - /TF1/Tree1
-        - /tb3_21/Local Map1/Polygon1/Status1
-        - /tb3_21/LaserScan1/Status1
+        - /tb3_21
         - /tb3_21/RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 843
@@ -170,7 +169,7 @@ Visualization Manager:
               Topic: /tb3_0/move_base/DWAPlannerROS/global_plan
               Unreliable: false
               Value: true
-          Enabled: true
+          Enabled: false
           Name: Global Map
         - Alpha: 1
           Axes Length: 1
@@ -193,7 +192,7 @@ Visualization Manager:
           Axes Radius: 0.00999999978
           Class: rviz/PoseArray
           Color: 0; 192; 0
-          Enabled: true
+          Enabled: false
           Head Length: 0.0700000003
           Head Radius: 0.0299999993
           Name: Amcl Particles
@@ -202,7 +201,7 @@ Visualization Manager:
           Shape: Arrow (Flat)
           Topic: /tb3_0/particlecloud
           Unreliable: false
-          Value: true
+          Value: false
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -417,7 +416,7 @@ Visualization Manager:
               Topic: /tb3_1/move_base/DWAPlannerROS/global_plan
               Unreliable: false
               Value: true
-          Enabled: true
+          Enabled: false
           Name: Global Map
         - Alpha: 1
           Arrow Length: 0.0500000007
@@ -425,7 +424,7 @@ Visualization Manager:
           Axes Radius: 0.00999999978
           Class: rviz/PoseArray
           Color: 0; 192; 0
-          Enabled: true
+          Enabled: false
           Head Length: 0.0700000003
           Head Radius: 0.0299999993
           Name: Amcl Particles
@@ -434,7 +433,7 @@ Visualization Manager:
           Shape: Arrow (Flat)
           Topic: /tb3_1/particlecloud
           Unreliable: false
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -664,7 +663,7 @@ Visualization Manager:
               Topic: /tb3_2/move_base/DWAPlannerROS/global_plan
               Unreliable: false
               Value: true
-          Enabled: true
+          Enabled: false
           Name: Global Map
         - Alpha: 1
           Arrow Length: 0.0500000007
@@ -672,7 +671,7 @@ Visualization Manager:
           Axes Radius: 0.00999999978
           Class: rviz/PoseArray
           Color: 0; 192; 0
-          Enabled: true
+          Enabled: false
           Head Length: 0.0700000003
           Head Radius: 0.0299999993
           Name: Amcl Particles
@@ -681,7 +680,7 @@ Visualization Manager:
           Shape: Arrow (Flat)
           Topic: /tb3_2/particlecloud
           Unreliable: false
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
