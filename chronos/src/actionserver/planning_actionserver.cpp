@@ -189,7 +189,7 @@ public:
                 ROS_ERROR("task expression not available");
         }
 
-        ROS_INFO("Task: [%s]", task_expression.c_str());
+        //ROS_INFO("Task: [%s]", task_expression.c_str());
 
         //Resources 1,2,3 are mapped to 0,1,2 for computation reasons
         int resource = (goal-> resource_number) - 1;
@@ -199,7 +199,7 @@ public:
             as_.setAborted();
             return false;
         }
-        ROS_INFO("resource [%i]", resource);
+        //ROS_INFO("resource [%i]", resource);
 
         ros::Time start_time = goal->start_time.data;
         /*if(checkOccupancy(resource, start_time)){
@@ -257,22 +257,7 @@ public:
                         }
                 }
                 
-                break;
-            case 4:
-                /* code for condition */
-                break;
-            case 5:
-                /* code for condition */
-                break;
-            case 6:
-                /* code for condition */
-                break;
-            case 7:
-                /* code for condition */
-                break;
-            case 8:
-                /* code for condition */
-                break;                                                                                                
+                break;                                                                                              
             default:
                 ROS_ERROR("Task unclear.");
         }
@@ -324,22 +309,6 @@ public:
             }
         }
         return path_id;
-    }
-
-    //update makes no sense in the given context
-    bool updateTimeAtPath(int resource_id, ros::Time old_start_time, ros::Time new_start_time)
-    {
-        //todo implement function with the time_client
-    }
-
-    bool updateStartAtPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped new_start)
-    {
-        //todo implement with just a new path with createPath
-    }
-
-    bool updateGoalAtPath(int resource_id, ros::Time start_time, geometry_msgs::PoseStamped new_goal)
-    {
-        //todo implement with createPath and replace the old path
     }
 };
 

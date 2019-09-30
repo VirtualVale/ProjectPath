@@ -15,18 +15,16 @@ ros::Time snapshot;
 
 void planCallback(const chronos::plan::ConstPtr& msg)
 {
-    ROS_INFO("planCallback");
+    ROS_INFO("Visualizer received the plan.");
     plan[0] = msg -> plan_1;
     plan[1] = msg -> plan_2;
     plan[2] = msg -> plan_3;
-    //plan[(*msg).resource_number] = (*msg).resource_plan;
 }
 
 void timeCallback(const std_msgs::Time::ConstPtr& msg)
 {
-    ROS_INFO("timeCallback");
     snapshot = ros::Time((*msg).data.toSec());
-    ROS_INFO("new time toSec %lf", snapshot.toSec());
+    //ROS_INFO("new time toSec %lf", snapshot.toSec());
 }
 
 int main(int argc, char *argv[])
@@ -51,7 +49,7 @@ int main(int argc, char *argv[])
     ros::Publisher r3_pose_pub = n.advertise<geometry_msgs::PoseStamped>("r3_pose", 1000);
     ros::Publisher r3_path_f_pub = n.advertise<nav_msgs::Path>("r3_path_f", 1000);
     ros::Publisher r3_path_t_pub = n.advertise<nav_msgs::Path>("r3_path_t", 1000);    
-    ROS_INFO("pub rdy");
+    ROS_INFO("Ready to visualize plan.");
 
     while (ros::ok())
     {
@@ -80,19 +78,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-/*
-void visualizePlan()
-{
-    if(!plan[0].empty())
-    {
-        r1_path_f_pub.publish(pathSlicing(snapshot, pathAtTime(snapshot, plan[0]), true));
-        r1_path_t_pub.publish(pathSlicing(snapshot, pathAtTime(snapshot, plan[0]), false));
-        r1_pose_pub.publish(poseAtTime(snapshot, pathAtTime(snapshot, plan[0]));)
-
-    }
-}
-*/
-
+//PoseAtTime and pathAtTime compute the difference between the transferred time and path pose/start time to find the pose/path which is most likely searched with this currentTime
 geometry_msgs::PoseStamped poseAtTime(ros::Time currentTime, nav_msgs::Path currentPath)
 {
   geometry_msgs::PoseStamped  searchedPose;
@@ -125,6 +111,7 @@ nav_msgs::Path pathAtTime(ros::Time currentTime, std::vector<nav_msgs::Path> pla
    return searchedPath;
 }
 
+//for visualization reasons the path is divided into three informations: 1. the path that lies in front of the robot, 2. the current pose and 3. the way the robot already absolved
 nav_msgs::Path pathSlicing(ros::Time currentTime, nav_msgs::Path currentPath, bool forward)
 {
     int poseID = 0;

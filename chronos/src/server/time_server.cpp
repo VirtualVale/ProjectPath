@@ -9,7 +9,7 @@ bool stampTime(chronos::time_service::Request &req, chronos::time_service::Respo
         return 1;
     }
     
-    req.path.poses[0].header.stamp = ros::Time(req.startTime);
+    req.path.poses.front().header.stamp = ros::Time(req.startTime);
     for(int i=1; i<req.path.poses.size(); i++){
         //calculate distance btw pair of poses
         double euclideanDistance = sqrt(pow((req.path.poses[i].pose.position.x-req.path.poses[i-1].pose.position.x),2)+pow((req.path.poses[i].pose.position.y-req.path.poses[i-1].pose.position.y),2));
@@ -17,7 +17,7 @@ bool stampTime(chronos::time_service::Request &req, chronos::time_service::Respo
         double travel_time = euclideanDistance/ req.average_velocity;
         req.path.poses[i].header.stamp = req.path.poses[i-1].header.stamp + ros::Duration(travel_time);
     }
-    req.path.header.stamp = ros::Time(req.startTime);
+    ROS_INFO("Start time: [%i] Goal time: [%i]", req.path.poses.front().header.stamp.sec, req.path.poses.back().header.stamp.sec);
     res.path_timestamped = req.path;
     return true;
 }

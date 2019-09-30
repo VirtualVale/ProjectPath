@@ -198,7 +198,7 @@ public:
             as_.setAborted();
             return false;
         }
-        ROS_INFO("start time [%lf]", startTime.toSec());
+        //initrd.img.oldROS_INFO("start time [%lf]", startTime.toSec());
 
         //START POSITION DETERMINATION
         geometry_msgs::PoseStamped startPose; 
@@ -241,7 +241,7 @@ public:
         //PATHCREATION
         nav_msgs::Path created_path;
         created_path = createPath(startPose, goalPose, startTime);
-        ROS_INFO("goal time [%.2lf]", created_path.poses.back().header.stamp.toSec());
+        //ROS_INFO("goal time [%.2lf]", created_path.poses.back().header.stamp.toSec());
 
         nav_msgs::Path path_collisionfree = collisionChecking(created_path, resource);
         result_.path_collisionfree = path_collisionfree;
@@ -253,7 +253,7 @@ public:
 
 void planCallback(const chronos::plan::ConstPtr& msg)
 {
-    ROS_INFO("planCallback");
+    ROS_INFO("PTS received the plan.");
     plan[0] = msg -> plan_1;
     plan[1] = msg -> plan_2;
     plan[2] = msg -> plan_3;
@@ -266,6 +266,7 @@ int main(int argc, char *argv[])
     PTSAction PTS("PTS");
     ros::NodeHandle n;
     ros::Subscriber plan_sub = n.subscribe("plan", 1000, planCallback);
+    ROS_INFO("Ready to compute travel time.");
     while (ros::ok())
     {
         ros::spinOnce();
