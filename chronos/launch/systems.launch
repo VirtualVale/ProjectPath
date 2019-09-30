@@ -2,4 +2,6 @@
     <node name="PTS_actionserver" pkg="chronos" type="PTS_actionserver" output="screen" />
     <node name="visualization" pkg="chronos" type="visualization" output="screen" />
     <node name="path_execution" pkg="chronos" type="path_execution" output="screen" />
+    <node name="planning_actionserver" pkg="chronos" type="planning_actionserver" output="screen" />
+    <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui"/>
 </launch>

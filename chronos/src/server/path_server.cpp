@@ -10,13 +10,14 @@ bool createPath(chronos::path_service::Request &req, chronos::path_service::Resp
     //costmap
     tf::TransformListener tf(ros::Duration(10));
     costmap_2d::Costmap2DROS costmap ("costmap", tf);
-    costmap.start();    
+    costmap.start();
+
     //global planner - navfn
     navfn::NavfnROS navfn;
     navfn.initialize("my_nafvn_planner", &costmap); 
     navfn.makePlan(req.start, req.goal, plan);
-    //response 
-    //poses is calculated plan
+
+    //plan is a pose array
     res.path.poses = plan;
     res.path.header.frame_id = "map";
     

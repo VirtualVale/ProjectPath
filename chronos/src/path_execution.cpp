@@ -13,12 +13,15 @@ std::vector<nav_msgs::Path> plan[3];
 
 void planCallback(const chronos::plan::ConstPtr& msg)
 {
-    ROS_INFO("planCallback");
+    ROS_INFO("Path_execution received the plan.");
     plan[0] = msg -> plan_1;
     plan[1] = msg -> plan_2;
     plan[2] = msg -> plan_3;
-    //plan[(*msg).resource_number] = (*msg).resource_plan;
     
+    //paths are transferred as one path, but have to be splitted to execute them 
+    //for this reason the computed paths manipulate the pose sequence number in the following way
+    //if the seq is 0 everything is ok, but if there is a pose with seq 1 this signalizes the end of one path and the start of the next
+    //so in the following the path is sliced into multiple parts for execution
     nav_msgs::Path slice;
     for(int i=0; i<3;i++)
         {
@@ -29,14 +32,14 @@ void planCallback(const chronos::plan::ConstPtr& msg)
                     if(plan[i][j].poses[k].header.seq == 1)
                     {
                         slice.poses.clear();
-                        ROS_ERROR("path is sliced at resource %i, path %i and pose %i", i, j, k);
+                        //ROS_ERROR("path is sliced at resource %i, path %i and pose %i", i, j, k);
                         slice.header = plan[i][j].header;
                         slice.poses.insert(slice.poses.begin(), plan[i][j].poses.begin(), plan[i][j].poses.begin()+k+1);
-                        ROS_INFO("old path: %lu, new path: %lu, old plan size: %lu", plan[i][j].poses.size(), slice.poses.size(), plan[i].size());
-                        ROS_INFO("last pose seq %i", slice.poses.back().header.seq);
+                        //ROS_INFO("old path: %lu, new path: %lu, old plan size: %lu", plan[i][j].poses.size(), slice.poses.size(), plan[i].size());
+                        //ROS_INFO("last pose seq %i", slice.poses.back().header.seq);
                         slice.poses.back().header.seq = 0;
                         plan[i].push_back(slice);
-                        ROS_INFO("new plan size: %lu", plan[i].size());
+                        //ROS_INFO("new plan size: %lu", plan[i].size());
                         plan[i][j].poses.erase(plan[i][j].poses.begin(), plan[i][j].poses.begin()+k+1);
                         slice = plan[i][j];
                         plan[i].push_back(slice);
@@ -54,6 +57,7 @@ int main(int argc, char *argv[])
     ros::NodeHandle n;
     ros::Subscriber plan_sub = n.subscribe("plan", 1000, planCallback);
     ros::Duration d(1.0);
+    ROS_INFO("Ready to execute paths.");
 
       //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("tb3_0/move_base", true);
@@ -66,7 +70,7 @@ int main(int argc, char *argv[])
   }
 
   move_base_msgs::MoveBaseGoal goal;
-
+    //in the next loops the time is refreshed every second and if the start time of a path is the current time the path is executed
     while (ros::ok())
     {
         ros::Time time = ros::Time::now();
@@ -85,8 +89,6 @@ int main(int argc, char *argv[])
                     goal.target_pose.pose.orientation.z = 0.0;
                     goal.target_pose.pose.orientation.w = 1.0;
 
-                    ROS_INFO("moving to the goal position");
-
                     switch (i)
                     {
                         case 0:
@@ -102,14 +104,6 @@ int main(int argc, char *argv[])
                             ROS_ERROR("switch didnt work!");
                     }
                     
-                    /*
-                    ac.waitForResult();
-                    
-                    if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-                        ROS_INFO("goal reached!");
-                    else
-                        ROS_INFO("The base failed to move forward 1 meter for some reason");
-                    */
                     d.sleep();
                 }
             }
