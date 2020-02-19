@@ -1,0 +1,5 @@
+<launch>
+    <include file="$(find chronos)/launch/paper/sub/paper_gazebo.launch"/>
+    <include file="$(find chronos)/launch/paper/sub/paper_navigation.launch"/>
+
+</launch>

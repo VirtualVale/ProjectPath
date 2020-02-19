@@ -159,6 +159,11 @@ add_executable(planning_test src/tests/planning_test.cpp)
 add_executable(visualization src/visualization.cpp)
 add_executable(path_execution src/path_execution.cpp)
 add_executable(planning_actionserver src/actionserver/planning_actionserver.cpp)
+add_executable(paper src/paper/stop/paper.cpp)
+add_executable(paper_1 src/paper/stop/paper_1.cpp)
+add_executable(paper_2 src/paper/stop/paper_2.cpp)
+add_executable(paper_3 src/paper/stop/paper_3.cpp)
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -180,6 +185,10 @@ add_dependencies(visualization ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPO
 add_dependencies(path_execution ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(planning_actionserver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(planning_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(paper ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(paper_1 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(paper_2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(paper_3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -221,6 +230,19 @@ target_link_libraries(path_execution
 target_link_libraries(planning_actionserver
   ${catkin_LIBRARIES}
 )
+target_link_libraries(paper
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(paper_1
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(paper_2
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(paper_3
+  ${catkin_LIBRARIES}
+)
+
 #############
 ## Install ##
 #############
