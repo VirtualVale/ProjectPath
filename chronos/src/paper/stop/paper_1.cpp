@@ -15,11 +15,11 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "paper_1");
 
   goal_type list_goals[5];
-  list_goals[0] = {1, 1, 1, 2};
-  list_goals[1] = {6.5, 0.5, 1, 0};
-  list_goals[2] = {6.5, 0.5, 1, 0};
-  list_goals[3] = {6.5, 0.5, 1, 0};
-  list_goals[4] = {6.5, 0.5, 1, 0};
+  list_goals[0] = {1.3, 1.3, 1, 0};
+  list_goals[1] = {6.5, 0, 1, 0};
+  list_goals[2] = {6.5, 0, 1, 0};
+  list_goals[3] = {6.5, 0, 1, 0};
+  list_goals[4] = {6.5, 0, 1, 0};
 
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("tb3_1/move_base", true);
@@ -34,7 +34,10 @@ int main(int argc, char** argv){
   goal.target_pose.header.frame_id = "map";
   goal.target_pose.header.stamp = ros::Time::now();
 
+  ros::Time time_sum;
+
   for(int i=0; i<=4; i++){
+    ros::Time begin = ros::Time::now();
     goal.target_pose.pose.position.x = list_goals[i].x_pos;
     goal.target_pose.pose.position.y = list_goals[i].y_pos;
     goal.target_pose.pose.orientation.w = list_goals[i].orient;
@@ -45,9 +48,12 @@ int main(int argc, char** argv){
       ROS_INFO("Postition %d reached!", i);
     else
       ROS_INFO("The base failed to reach position %d for some reason", i);
+    ros::Duration time_diff = ros::Time::now() - begin;
+    ROS_INFO("time diff %f", time_diff.toSec());
+    time_sum = time_sum + time_diff;
     ros::Duration(list_goals[i].time).sleep();
   }
-
+  ROS_INFO("time_sum %f", time_sum.toSec());
 
   return 0;
 }

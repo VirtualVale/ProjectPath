@@ -12,17 +12,17 @@ struct goal_type {
 };
 
 int main(int argc, char** argv){
-  ros::init(argc, argv, "paper_3");
+  ros::init(argc, argv, "paper_2");
 
   goal_type list_goals[5];
-  list_goals[0] = {0.7, 2.6, 1, 2};
-  list_goals[1] = {3.5, 4, 1, 0};
-  list_goals[2] = {0.7, 4.5, 1, 0};
-  list_goals[3] = {0.7, 4.5, 1, 0};
-  list_goals[4] = {0.7, 4.5, 1, 0};
+  list_goals[0] = {1.7, 4, 1, 0};
+  list_goals[1] = {1.7, 4, 1, 0};
+  list_goals[2] = {1.7, 4, 1, 0};
+  list_goals[3] = {1.7, 4, 1, 0};
+  list_goals[4] = {1.7, 4, 1, 0};
 
   //tell the action client that we want to spin a thread by default
-  MoveBaseClient ac("tb3_3/move_base", true);
+  MoveBaseClient ac("tb3_2/move_base", true);
 
   //wait for the action server to come up
   while(!ac.waitForServer(ros::Duration(5.0))){
@@ -54,8 +54,6 @@ int main(int argc, char** argv){
     ros::Duration(list_goals[i].time).sleep();
   }
   ROS_INFO("time_sum %f", time_sum.toSec());
-  
-
 
   return 0;
 }

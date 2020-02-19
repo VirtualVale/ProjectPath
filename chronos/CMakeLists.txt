@@ -163,6 +163,10 @@ add_executable(paper src/paper/stop/paper.cpp)
 add_executable(paper_1 src/paper/stop/paper_1.cpp)
 add_executable(paper_2 src/paper/stop/paper_2.cpp)
 add_executable(paper_3 src/paper/stop/paper_3.cpp)
+add_executable(around src/paper/around/around.cpp)
+add_executable(around_1 src/paper/around/around_1.cpp)
+add_executable(around_2 src/paper/around/around_2.cpp)
+add_executable(around_3 src/paper/around/around_3.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -189,6 +193,10 @@ add_dependencies(paper ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TAR
 add_dependencies(paper_1 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(paper_2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(paper_3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(around ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(around_1 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(around_2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(around_3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -240,6 +248,18 @@ target_link_libraries(paper_2
   ${catkin_LIBRARIES}
 )
 target_link_libraries(paper_3
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(around
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(around_1
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(around_2
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(around_3
   ${catkin_LIBRARIES}
 )
 
