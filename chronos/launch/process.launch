@@ -1,0 +1,5 @@
+<launch>
+    <node name="process_single_robot_1" pkg="chronos" type="process_single_robot_1" output="screen" />
+    <node name="process_single_robot_2" pkg="chronos" type="process_single_robot_2" output="screen" />
+    <node name="process_single_robot_3" pkg="chronos" type="process_single_robot_3" output="screen" />
+</launch>
