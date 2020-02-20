@@ -15,7 +15,7 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "paper_2");
 
   goal_type list_goals[5];
-  list_goals[0] = {1.7, 4, 0, 7};
+  list_goals[0] = {1.7, 4, 0, 9};
   list_goals[1] = {5.5, 4, 0, 0};
   list_goals[2] = {5.5, 4, 0, 0};
   list_goals[3] = {5.5, 4, 0, 0};

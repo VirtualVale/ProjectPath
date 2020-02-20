@@ -15,11 +15,11 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "paper_3");
 
   goal_type list_goals[5];
-  list_goals[0] = {1, 6.5, 0, 0};
+  list_goals[0] = {1, 6.5, 1, 0};
   list_goals[1] = {3.5, 4, 0, 0};
-  list_goals[2] = {3.5, 4, 0, 0};
-  list_goals[3] = {3.5, 4, 0, 0};
-  list_goals[4] = {3.5, 4, 0, 0};
+  list_goals[2] = {1, 6.5, 1, 0};
+  list_goals[3] = {0, 4.5, 0, 0};
+  list_goals[4] = {0, 4.5, 0, 0};
 
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("tb3_3/move_base", true);
