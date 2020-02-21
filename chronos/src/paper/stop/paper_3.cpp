@@ -17,9 +17,9 @@ int main(int argc, char** argv){
   goal_type list_goals[5];
   list_goals[0] = {0.7, 2.6, 0, 2};
   list_goals[1] = {3.5, 4, 0, 0};
-  list_goals[2] = {3, 4, 0, 2};
-  list_goals[3] = {0, 4.5, 0, 0};
-  list_goals[4] = {0, 4.5, 0, 0};
+  list_goals[2] = {3.3, 4, -2, 4};
+  list_goals[3] = {0, 5, 0, 0};
+  list_goals[4] = {5, 6, 0, 0};
 
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("tb3_3/move_base", true);
