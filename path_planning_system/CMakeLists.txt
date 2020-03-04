@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(chronos)
+project(path_planning_system)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -56,23 +56,23 @@ find_package(catkin REQUIRED REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   visualization.msg
-   plan.msg
+   ## visualization.msg
+   ## plan.msg
  )
 
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
    path_service.srv
-   time_service.srv
-   collision_service.srv
+   ## time_service.srv
+   ## collision_service.srv
  )
 
 ## Generate actions in the 'action' folder
  add_action_files(
    FILES
-   PTS.action
-   planning.action
+   ## PTS.action
+   ## planning.action
  )
 
 ## Generate added messages and services with any dependencies listed here
@@ -116,9 +116,9 @@ find_package(catkin REQUIRED REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES chronos
+#  LIBRARIES path_planning_system
   CATKIN_DEPENDS
-message_runtime
+  message_runtime
   actionlib_msgs
 #  DEPENDS system_lib
 )
@@ -136,7 +136,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/chronos.cpp
+#   src/${PROJECT_NAME}/path_planning_system.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -147,26 +147,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(path_server src/server/path_server.cpp)
-#add_executable(path_test src/tests/path_test.cpp)
-#add_executable(time_server src/server/time_server.cpp)
-#add_executable(time_test src/tests/time_test.cpp)
-#add_executable(collision_server src/server/collision_server.cpp)
-#add_executable(collision_test src/tests/collision_test.cpp)
-#add_executable(PTS_actionserver src/actionserver/PTS_actionserver.cpp)
-#add_executable(PTS_test src/tests/PTS_test.cpp)
-#add_executable(planning_test src/tests/planning_test.cpp)
-#add_executable(visualization src/visualization.cpp)
-#add_executable(path_execution src/path_execution.cpp)
-#add_executable(planning_actionserver src/actionserver/planning_actionserver.cpp)
-#add_executable(paper src/paper/stop/paper.cpp)
-#add_executable(paper_1 src/paper/stop/paper_1.cpp)
-#add_executable(paper_2 src/paper/stop/paper_2.cpp)
-#add_executable(paper_3 src/paper/stop/paper_3.cpp)
-#add_executable(around src/paper/around/around.cpp)
-#add_executable(around_1 src/paper/around/around_1.cpp)
-#add_executable(around_2 src/paper/around/around_2.cpp)
-#add_executable(around_3 src/paper/around/around_3.cpp)
+add_executable(path_server src/server/path_server.cpp)
+add_executable(path_server_test src/test/path_server_test.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -177,91 +159,19 @@ include_directories(
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(path_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(path_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(time_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(time_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(collision_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(collision_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(PTS_actionserver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(PTS_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(visualization ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(path_execution ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(planning_actionserver ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(planning_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(paper ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(paper_1 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(paper_2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(paper_3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(around ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(around_1 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(around_2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(around_3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(path_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(path_server_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-#target_link_libraries(path_server
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(path_test
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(time_server
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(time_test
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(collision_server
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(collision_test
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(PTS_actionserver
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(PTS_test
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(planning_test
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(visualization
-##  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(path_execution
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(planning_actionserver
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(paper
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(paper_1
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(paper_2
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(paper_3
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(around
- # ${catkin_LIBRARIES}
-#)
-#target_link_libraries(around_1
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(around_2
-#  ${catkin_LIBRARIES}
-#)
-#target_link_libraries(around_3
-#  ${catkin_LIBRARIES}
-#)
+target_link_libraries(path_server
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(path_server_test
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -303,7 +213,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_chronos.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_path_planning_system.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

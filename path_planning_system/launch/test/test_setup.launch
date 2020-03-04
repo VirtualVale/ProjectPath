@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find path_planning_system)/launch/subsystems/gazebo.launch"/>
+    <include file="$(find path_planning_system)/launch/subsystems/navigation.launch"/>
+</launch>
