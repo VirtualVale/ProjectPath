@@ -1,0 +1,9 @@
+<launch>
+    <include file="$(find path_planning_system)/launch/subsystems/gazebo.launch">
+      <arg name="rviz_config" value="path_test"/>
+    </include>
+    <include file="$(find path_planning_system)/launch/subsystems/navigation.launch"/>
+    <node name="path_server" pkg="path_planning_system" type="path_server" output="screen" >
+      <rosparam file="$(find path_planning_system)/config/test/costmap_example.yaml" command="load" ns="costmap" />
+    </node>
+</launch>
