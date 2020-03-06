@@ -15,6 +15,7 @@ find_package(catkin REQUIRED REQUIRED COMPONENTS
   tf
   costmap_2d
   navfn
+  global_planner
   nav_msgs
   geometry_msgs
   actionlib_msgs
@@ -147,7 +148,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(path_server src/server/path_server.cpp)
+add_executable(path_server_global_planner src/server/path_server_global_planner.cpp)
+add_executable(path_server_navfn src/server/path_server_navfn.cpp)
 add_executable(path_server_test src/test/path_server_test.cpp)
 
 ## Rename C++ executable without prefix
@@ -159,14 +161,18 @@ add_executable(path_server_test src/test/path_server_test.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(path_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(path_server_global_planner ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(path_server_navfn ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(path_server_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(path_server
+target_link_libraries(path_server_global_planner
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(path_server_navfn
   ${catkin_LIBRARIES}
 )
 target_link_libraries(path_server_test
