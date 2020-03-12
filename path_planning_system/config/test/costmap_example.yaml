@@ -5,8 +5,8 @@ update_frequency: 5.0
 publish_frequency: 1.0
 plugins: 
     - {name: static_map,       type: "costmap_2d::StaticLayer"}
-    - {name: obstacles,        type: "costmap_2d::VoxelLayer"}
-    - {name: inflation_layer, type: 'costmap_2d::InflationLayer'}
+    #- {name: obstacles,        type: "costmap_2d::VoxelLayer"}
+    #- {name: inflation_layer, type: 'costmap_2d::InflationLayer'}
 
 #set if you want the voxel map published
 publish_voxel_map: true
