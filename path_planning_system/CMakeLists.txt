@@ -151,6 +151,7 @@ include_directories(
 add_executable(path_server_global_planner src/server/path_server_global_planner.cpp)
 add_executable(path_server_navfn src/server/path_server_navfn.cpp)
 add_executable(path_server_test src/test/path_server_test.cpp)
+add_executable(path_db_test src/database/path_db_test.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -164,6 +165,8 @@ add_executable(path_server_test src/test/path_server_test.cpp)
 add_dependencies(path_server_global_planner ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(path_server_navfn ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(path_server_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(path_db_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -176,6 +179,9 @@ target_link_libraries(path_server_navfn
   ${catkin_LIBRARIES}
 )
 target_link_libraries(path_server_test
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(path_db_test
   ${catkin_LIBRARIES}
 )
 
