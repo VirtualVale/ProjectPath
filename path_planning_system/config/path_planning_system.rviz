@@ -843,7 +843,7 @@ Visualization Manager:
     - Class: rviz/SetInitialPose
       Topic: /initialpose
     - Class: rviz/SetGoal
-      Topic: /move_base_simple/goal
+      Topic: tb3_0/move_base_simple/goal
     - Class: rviz/Measure
   Value: true
   Views:
@@ -882,5 +882,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1855
-  X: 1985
-  Y: 116
+  X: 65
+  Y: 24
