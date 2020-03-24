@@ -4,13 +4,17 @@ y_pos=(0 0 1 2 3 4 5 6 7 8)
 number=$(zenity --entry --text "How many robots should spawn in the simulation?
 (Valid are integers between 1 and 10)" --entry-text "1" --title "Number of robots" 2> /dev/null) 
 echo "$number"
-roslaunch path_planning_system dynamic_gazebo_map_rviz.launch &
 if [ $number -le 0 -o $number -ge 10 ]
     then
         echo "Wrong input!"
         exit  255
 fi
-zenity --info --text "Valo spawns $number robots!" 2> /dev/null
+roslaunch path_planning_system dynamic_gazebo_map_rviz.launch &
+sleep 5s
+if ! zenity --warning --text "$number robots are spawned!" 2> /dev/null; then
+  kill $(jobs -p)
+  exit;
+fi
 counter=1
 while [ $counter -le $number ]
 do
@@ -26,6 +30,5 @@ while [ $kill_command != "k" ]
 do
     read kill_command
 done
-echo kill
 kill $(jobs -p)
 #roslaunch path_planning_system setup.launch
