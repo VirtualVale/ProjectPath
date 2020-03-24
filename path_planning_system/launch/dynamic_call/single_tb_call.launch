@@ -1,12 +1,13 @@
+<launch>
 <!-- Arguments -->
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
-  <arg name="tb_number" default="1">
+  <arg name="tb_number"   default="1"/>
 
 <!-- Start positions and Prefix definitions -->
-  <arg name="x_pos" default="0.0">
-  <arg name="y_pos" default="0.0">
-  <arg name="z_pos" default="0.0">
-  <arg name="orient" default="1.0">
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="orient" default="1.0"/>
 
 <!-- Spawn -->
   <group ns = "tb3_$(arg tb_number)">
@@ -19,3 +20,4 @@
     
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg tb_number) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -Y $(arg orient) -param robot_description" />
   </group>
+</launch>

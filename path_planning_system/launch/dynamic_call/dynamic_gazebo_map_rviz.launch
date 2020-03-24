@@ -1,0 +1,27 @@
+<launch>
+<!-- Arguments -->
+  <arg name="map_file" default="$(find path_planning_system)/maps/paper/paper_polished.yaml"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/> 
+  <arg name="rviz_config" default="path_planning_system"/>
+
+ <!-- Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find path_planning_system)/worlds/paper_world.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find path_planning_system)/config/$(arg rviz_config).rviz"/>
+  </group>
+
+</launch>
