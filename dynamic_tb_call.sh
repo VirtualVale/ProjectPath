@@ -1,5 +1,5 @@
 #!/bin/bash
-trap "echo haha,was" SIGINT SIGTERM
+trap "kill $(jobs -p); exit 187;" SIGTERM
 x_pos=(0 0 0 0 0 0 0 0 0 0)
 y_pos=(0 0 1 2 3 4 5 6 7 8)
 number=$(zenity --entry --text "How many robots should spawn in the simulation?
@@ -14,7 +14,7 @@ roslaunch -v path_planning_system dynamic_gazebo_map_rviz.launch &
 sleep 5s
 if ! zenity --warning --text "$number robots are spawned!" 2> /dev/null; then
   kill $(jobs -p)
-  exit;
+  exit 255;
 fi
 counter=1
 while [ $counter -le $number ]
@@ -23,7 +23,7 @@ do
     ((counter++))
 done
 sleep 5s
-echo press k to shutdown
+echo press k to shutdown or Strg+C
 kill_command="o"
 while [ $kill_command != "k" ]
 do
