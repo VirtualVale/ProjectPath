@@ -10,7 +10,7 @@ if [ $number -le 0 -o $number -ge 10 ]
         echo "Wrong input!"
         exit  255
 fi
-roslaunch -v path_planning_system dynamic_gazebo_map_rviz.launch &
+roslaunch path_planning_system dynamic_gazebo_map_rviz.launch &
 sleep 5s
 if ! zenity --warning --text "$number robots are spawned!" 2> /dev/null; then
   kill $(jobs -p)
@@ -19,7 +19,8 @@ fi
 counter=1
 while [ $counter -le $number ]
 do
-    roslaunch -v path_planning_system dynamic_single_robot.launch tb_number:=$counter y_pos:=${y_pos[$counter]} &
+    roslaunch path_planning_system dynamic_spawn.launch tb_number:=$counter y_pos:=${y_pos[$counter]} &
+    sleep 5s
     ((counter++))
 done
 sleep 5s
