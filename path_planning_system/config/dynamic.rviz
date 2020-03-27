@@ -110,7 +110,7 @@ Visualization Manager:
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 255; 255; 0
+              Color: 0; 0; 255
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -122,7 +122,7 @@ Visualization Manager:
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 255; 85; 255
+              Pose Color: 2; 0; 1
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -147,7 +147,7 @@ Visualization Manager:
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 0; 0; 139
+              Color: 0; 0; 205
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -159,7 +159,7 @@ Visualization Manager:
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 0; 0; 139
+              Pose Color: 4; 0; 1
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -174,7 +174,7 @@ Visualization Manager:
           Axes Length: 0.300000012
           Axes Radius: 0.00999999978
           Class: rviz/PoseArray
-          Color: 0; 192; 0
+          Color: 0; 0; 255
           Enabled: true
           Head Length: 0.0700000003
           Head Radius: 0.0299999993
@@ -194,7 +194,7 @@ Visualization Manager:
           Axis: Z
           Channel Name: intensity
           Class: rviz/LaserScan
-          Color: 0; 255; 0
+          Color: 0; 0; 255
           Color Transformer: FlatColor
           Decay Time: 0
           Enabled: true
@@ -218,7 +218,7 @@ Visualization Manager:
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
-          Color: 0; 0; 0
+          Color: 0; 0; 139
           Enabled: true
           Head Diameter: 0.300000012
           Head Length: 0.200000003
@@ -230,7 +230,7 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
-          Pose Color: 255; 85; 255
+          Pose Color: 8; 0; 1
           Pose Style: None
           Radius: 0.0299999993
           Shaft Diameter: 0.100000001
@@ -258,7 +258,7 @@ Visualization Manager:
           Axes Length: 1
           Axes Radius: 0.100000001
           Class: rviz/Pose
-          Color: 255; 25; 0
+          Color: 0; 0; 139
           Enabled: true
           Head Length: 0.300000012
           Head Radius: 0.100000001
@@ -296,7 +296,7 @@ Visualization Manager:
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 255; 255; 0
+              Color: 255; 0; 0
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -308,7 +308,7 @@ Visualization Manager:
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 255; 85; 255
+              Pose Color: 3; 0; 0
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -333,7 +333,7 @@ Visualization Manager:
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 139; 0; 0
+              Color: 205; 0; 0
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -345,7 +345,7 @@ Visualization Manager:
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 139; 0; 0
+              Pose Color: 5; 0; 0
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -360,7 +360,7 @@ Visualization Manager:
           Axes Length: 0.300000012
           Axes Radius: 0.00999999978
           Class: rviz/PoseArray
-          Color: 0; 192; 0
+          Color: 255; 0; 0
           Enabled: true
           Head Length: 0.0700000003
           Head Radius: 0.0299999993
@@ -380,7 +380,7 @@ Visualization Manager:
           Axis: Z
           Channel Name: intensity
           Class: rviz/LaserScan
-          Color: 0; 255; 0
+          Color: 255; 0; 0
           Color Transformer: FlatColor
           Decay Time: 0
           Enabled: true
@@ -404,7 +404,7 @@ Visualization Manager:
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
-          Color: 0; 0; 0
+          Color: 139; 0; 0
           Enabled: true
           Head Diameter: 0.300000012
           Head Length: 0.200000003
@@ -416,7 +416,7 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
-          Pose Color: 255; 85; 255
+          Pose Color: 9; 0; 0
           Pose Style: None
           Radius: 0.0299999993
           Shaft Diameter: 0.100000001
@@ -444,7 +444,7 @@ Visualization Manager:
           Axes Length: 1
           Axes Radius: 0.100000001
           Class: rviz/Pose
-          Color: 255; 25; 0
+          Color: 139; 0; 0
           Enabled: true
           Head Length: 0.300000012
           Head Radius: 0.100000001
@@ -482,7 +482,7 @@ Visualization Manager:
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 255; 255; 0
+              Color: 0; 255; 0
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -494,7 +494,7 @@ Visualization Manager:
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 255; 85; 255
+              Pose Color: 2; 1; 0
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -519,7 +519,7 @@ Visualization Manager:
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 0; 139; 0
+              Color: 0; 205; 0
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -531,7 +531,7 @@ Visualization Manager:
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 0; 139; 0
+              Pose Color: 4; 1; 0
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -546,7 +546,7 @@ Visualization Manager:
           Axes Length: 0.300000012
           Axes Radius: 0.00999999978
           Class: rviz/PoseArray
-          Color: 0; 192; 0
+          Color: 0; 255; 0
           Enabled: true
           Head Length: 0.0700000003
           Head Radius: 0.0299999993
@@ -590,7 +590,7 @@ Visualization Manager:
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
-          Color: 0; 0; 0
+          Color: 0; 139; 0
           Enabled: true
           Head Diameter: 0.300000012
           Head Length: 0.200000003
@@ -602,7 +602,7 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
-          Pose Color: 255; 85; 255
+          Pose Color: 8; 1; 0
           Pose Style: None
           Radius: 0.0299999993
           Shaft Diameter: 0.100000001
@@ -630,7 +630,7 @@ Visualization Manager:
           Axes Length: 1
           Axes Radius: 0.100000001
           Class: rviz/Pose
-          Color: 255; 25; 0
+          Color: 0; 139; 0
           Enabled: true
           Head Length: 0.300000012
           Head Radius: 0.100000001
@@ -643,6 +643,378 @@ Visualization Manager:
           Value: true
       Enabled: true
       Name: tb3_3
+    - Class: rviz/Group
+      Displays:
+        - Class: rviz/Group
+          Displays:
+            - Alpha: 1
+              Class: rviz/Polygon
+              Color: 0; 0; 0
+              Enabled: true
+              Name: Polygon
+              Topic: /tb3_4/move_base/local_costmap/footprint
+              Unreliable: false
+              Value: true
+            - Alpha: 0.699999988
+              Class: rviz/Map
+              Color Scheme: costmap
+              Draw Behind: false
+              Enabled: true
+              Name: Costmap
+              Topic: /tb3_4/move_base/local_costmap/costmap
+              Unreliable: false
+              Use Timestamp: false
+              Value: true
+            - Alpha: 1
+              Buffer Length: 1
+              Class: rviz/Path
+              Color: 255; 255; 0
+              Enabled: true
+              Head Diameter: 0.300000012
+              Head Length: 0.200000003
+              Length: 0.300000012
+              Line Style: Lines
+              Line Width: 0.0299999993
+              Name: Planner
+              Offset:
+                X: 0
+                Y: 0
+                Z: 0
+              Pose Color: 3; 1; 0
+              Pose Style: None
+              Radius: 0.0299999993
+              Shaft Diameter: 0.100000001
+              Shaft Length: 0.100000001
+              Topic: /tb3_4/move_base/DWAPlannerROS/local_plan
+              Unreliable: false
+              Value: true
+          Enabled: true
+          Name: Local Map
+        - Class: rviz/Group
+          Displays:
+            - Alpha: 0.699999988
+              Class: rviz/Map
+              Color Scheme: costmap
+              Draw Behind: true
+              Enabled: true
+              Name: Costmap
+              Topic: /tb3_4/move_base/global_costmap/costmap
+              Unreliable: false
+              Use Timestamp: false
+              Value: true
+            - Alpha: 1
+              Buffer Length: 1
+              Class: rviz/Path
+              Color: 205; 205; 0
+              Enabled: true
+              Head Diameter: 0.300000012
+              Head Length: 0.200000003
+              Length: 0.300000012
+              Line Style: Lines
+              Line Width: 0.0299999993
+              Name: Planner
+              Offset:
+                X: 0
+                Y: 0
+                Z: 0
+              Pose Color: 5; 1; 0
+              Pose Style: None
+              Radius: 0.0299999993
+              Shaft Diameter: 0.100000001
+              Shaft Length: 0.100000001
+              Topic: /tb3_4/move_base/DWAPlannerROS/global_plan
+              Unreliable: false
+              Value: true
+          Enabled: true
+          Name: Global Map
+        - Alpha: 1
+          Arrow Length: 0.0500000007
+          Axes Length: 0.300000012
+          Axes Radius: 0.00999999978
+          Class: rviz/PoseArray
+          Color: 255; 255; 0
+          Enabled: true
+          Head Length: 0.0700000003
+          Head Radius: 0.0299999993
+          Name: Amcl Particles
+          Shaft Length: 0.230000004
+          Shaft Radius: 0.00999999978
+          Shape: Arrow (Flat)
+          Topic: /tb3_4/particlecloud
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Autocompute Intensity Bounds: true
+          Autocompute Value Bounds:
+            Max Value: 10
+            Min Value: -10
+            Value: true
+          Axis: Z
+          Channel Name: intensity
+          Class: rviz/LaserScan
+          Color: 255; 255; 0
+          Color Transformer: FlatColor
+          Decay Time: 0
+          Enabled: true
+          Invert Rainbow: false
+          Max Color: 255; 255; 255
+          Max Intensity: 13069
+          Min Color: 0; 0; 0
+          Min Intensity: 28
+          Name: LaserScan
+          Position Transformer: XYZ
+          Queue Size: 10
+          Selectable: true
+          Size (Pixels): 3
+          Size (m): 0.0300000012
+          Style: Flat Squares
+          Topic: /tb3_4/scan
+          Unreliable: false
+          Use Fixed Frame: true
+          Use rainbow: true
+          Value: true
+        - Alpha: 1
+          Buffer Length: 1
+          Class: rviz/Path
+          Color: 139; 139; 0
+          Enabled: true
+          Head Diameter: 0.300000012
+          Head Length: 0.200000003
+          Length: 0.300000012
+          Line Style: Lines
+          Line Width: 0.0299999993
+          Name: Planner Plan
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Pose Color: 9; 1; 0
+          Pose Style: None
+          Radius: 0.0299999993
+          Shaft Diameter: 0.100000001
+          Shaft Length: 0.100000001
+          Topic: /tb3_4/move_base/NavfnROS/plan
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Class: rviz/RobotModel
+          Collision Enabled: false
+          Enabled: true
+          Links:
+            All Links Enabled: true
+            Expand Joint Details: false
+            Expand Link Details: false
+            Expand Tree: false
+            Link Tree Style: Links in Alphabetic Order
+          Name: RobotModel
+          Robot Description: /tb3_4/robot_description
+          TF Prefix: tb3_4
+          Update Interval: 0
+          Value: true
+          Visual Enabled: true
+        - Alpha: 1
+          Axes Length: 1
+          Axes Radius: 0.100000001
+          Class: rviz/Pose
+          Color: 139; 139; 0
+          Enabled: true
+          Head Length: 0.300000012
+          Head Radius: 0.100000001
+          Name: Goal
+          Shaft Length: 0.5
+          Shaft Radius: 0.0500000007
+          Shape: Arrow
+          Topic: /tb3_4/move_base/current_goal
+          Unreliable: false
+          Value: true
+      Enabled: true
+      Name: tb3_4
+    - Class: rviz/Group
+      Displays:
+        - Class: rviz/Group
+          Displays:
+            - Alpha: 1
+              Class: rviz/Polygon
+              Color: 0; 0; 0
+              Enabled: true
+              Name: Polygon
+              Topic: /tb3_5/move_base/local_costmap/footprint
+              Unreliable: false
+              Value: true
+            - Alpha: 0.699999988
+              Class: rviz/Map
+              Color Scheme: costmap
+              Draw Behind: false
+              Enabled: true
+              Name: Costmap
+              Topic: /tb3_5/move_base/local_costmap/costmap
+              Unreliable: false
+              Use Timestamp: false
+              Value: true
+            - Alpha: 1
+              Buffer Length: 1
+              Class: rviz/Path
+              Color: 255; 0; 255
+              Enabled: true
+              Head Diameter: 0.300000012
+              Head Length: 0.200000003
+              Length: 0.300000012
+              Line Style: Lines
+              Line Width: 0.0299999993
+              Name: Planner
+              Offset:
+                X: 0
+                Y: 0
+                Z: 0
+              Pose Color: 3; 0; 1
+              Pose Style: None
+              Radius: 0.0299999993
+              Shaft Diameter: 0.100000001
+              Shaft Length: 0.100000001
+              Topic: /tb3_5/move_base/DWAPlannerROS/local_plan
+              Unreliable: false
+              Value: true
+          Enabled: true
+          Name: Local Map
+        - Class: rviz/Group
+          Displays:
+            - Alpha: 0.699999988
+              Class: rviz/Map
+              Color Scheme: costmap
+              Draw Behind: true
+              Enabled: true
+              Name: Costmap
+              Topic: /tb3_5/move_base/global_costmap/costmap
+              Unreliable: false
+              Use Timestamp: false
+              Value: true
+            - Alpha: 1
+              Buffer Length: 1
+              Class: rviz/Path
+              Color: 205; 0; 205
+              Enabled: true
+              Head Diameter: 0.300000012
+              Head Length: 0.200000003
+              Length: 0.300000012
+              Line Style: Lines
+              Line Width: 0.0299999993
+              Name: Planner
+              Offset:
+                X: 0
+                Y: 0
+                Z: 0
+              Pose Color: 5; 0; 1
+              Pose Style: None
+              Radius: 0.0299999993
+              Shaft Diameter: 0.100000001
+              Shaft Length: 0.100000001
+              Topic: /tb3_5/move_base/DWAPlannerROS/global_plan
+              Unreliable: false
+              Value: true
+          Enabled: true
+          Name: Global Map
+        - Alpha: 1
+          Arrow Length: 0.0500000007
+          Axes Length: 0.300000012
+          Axes Radius: 0.00999999978
+          Class: rviz/PoseArray
+          Color: 255; 0; 255
+          Enabled: true
+          Head Length: 0.0700000003
+          Head Radius: 0.0299999993
+          Name: Amcl Particles
+          Shaft Length: 0.230000004
+          Shaft Radius: 0.00999999978
+          Shape: Arrow (Flat)
+          Topic: /tb3_5/particlecloud
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Autocompute Intensity Bounds: true
+          Autocompute Value Bounds:
+            Max Value: 10
+            Min Value: -10
+            Value: true
+          Axis: Z
+          Channel Name: intensity
+          Class: rviz/LaserScan
+          Color: 255; 0; 255
+          Color Transformer: FlatColor
+          Decay Time: 0
+          Enabled: true
+          Invert Rainbow: false
+          Max Color: 255; 255; 255
+          Max Intensity: 13069
+          Min Color: 0; 0; 0
+          Min Intensity: 28
+          Name: LaserScan
+          Position Transformer: XYZ
+          Queue Size: 10
+          Selectable: true
+          Size (Pixels): 3
+          Size (m): 0.0300000012
+          Style: Flat Squares
+          Topic: /tb3_5/scan
+          Unreliable: false
+          Use Fixed Frame: true
+          Use rainbow: true
+          Value: true
+        - Alpha: 1
+          Buffer Length: 1
+          Class: rviz/Path
+          Color: 139; 0; 139
+          Enabled: true
+          Head Diameter: 0.300000012
+          Head Length: 0.200000003
+          Length: 0.300000012
+          Line Style: Lines
+          Line Width: 0.0299999993
+          Name: Planner Plan
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Pose Color: 9; 0; 1
+          Pose Style: None
+          Radius: 0.0299999993
+          Shaft Diameter: 0.100000001
+          Shaft Length: 0.100000001
+          Topic: /tb3_5/move_base/NavfnROS/plan
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Class: rviz/RobotModel
+          Collision Enabled: false
+          Enabled: true
+          Links:
+            All Links Enabled: true
+            Expand Joint Details: false
+            Expand Link Details: false
+            Expand Tree: false
+            Link Tree Style: Links in Alphabetic Order
+          Name: RobotModel
+          Robot Description: /tb3_5/robot_description
+          TF Prefix: tb3_5
+          Update Interval: 0
+          Value: true
+          Visual Enabled: true
+        - Alpha: 1
+          Axes Length: 1
+          Axes Radius: 0.100000001
+          Class: rviz/Pose
+          Color: 139; 0; 139
+          Enabled: true
+          Head Length: 0.300000012
+          Head Radius: 0.100000001
+          Name: Goal
+          Shaft Length: 0.5
+          Shaft Radius: 0.0500000007
+          Shape: Arrow
+          Topic: /tb3_5/move_base/current_goal
+          Unreliable: false
+          Value: true
+      Enabled: true
+      Name: tb3_5
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

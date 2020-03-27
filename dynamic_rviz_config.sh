@@ -1,9 +1,9 @@
 #!/bin/bash
 echo "ready for creating the config"
 number=$1
-r_value=(0 0 139 0)
-g_value=(0 0 0 139)
-b_value=(0 139 0 0)
+r_value=(0 0 1 0 1 1 0 1 0)
+g_value=(0 0 0 1 1 0 1 1 0)
+b_value=(0 1 0 0 0 1 1 1 0)
 echo "Panels:
   - Class: rviz/Displays
     Help Height: 78
@@ -120,7 +120,7 @@ do
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 255; 255; 0
+              Color: $((${r_value[$counter]} * 255)); $((${g_value[$counter]} * 255)); $((${b_value[$counter]} * 255))
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -132,7 +132,7 @@ do
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 255; 85; 255
+              Pose Color: $((${r_value[$counter]}+2)); ${g_value[$counter]}; ${b_value[$counter]}
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -157,7 +157,7 @@ do
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: ${r_value[$counter]}; ${g_value[$counter]}; ${b_value[$counter]}
+              Color: $((${r_value[$counter]} * 205)); $((${g_value[$counter]} * 205)); $((${b_value[$counter]} * 205))
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -169,7 +169,7 @@ do
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: ${r_value[$counter]}; ${g_value[$counter]}; ${b_value[$counter]}
+              Pose Color: $((${r_value[$counter]}+4)); ${g_value[$counter]}; ${b_value[$counter]}
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
@@ -184,7 +184,7 @@ do
           Axes Length: 0.300000012
           Axes Radius: 0.00999999978
           Class: rviz/PoseArray
-          Color: 0; 192; 0
+          Color: $((${r_value[$counter]} * 255)); $((${g_value[$counter]} * 255)); $((${b_value[$counter]} * 255))
           Enabled: true
           Head Length: 0.0700000003
           Head Radius: 0.0299999993
@@ -204,7 +204,7 @@ do
           Axis: Z
           Channel Name: intensity
           Class: rviz/LaserScan
-          Color: 0; 255; 0
+          Color: $((${r_value[$counter]} * 255)); $((${g_value[$counter]} * 255)); $((${b_value[$counter]} * 255))
           Color Transformer: FlatColor
           Decay Time: 0
           Enabled: true
@@ -228,7 +228,7 @@ do
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
-          Color: 0; 0; 0
+          Color: $((${r_value[$counter]} * 139)); $((${g_value[$counter]} * 139)); $((${b_value[$counter]} * 139))
           Enabled: true
           Head Diameter: 0.300000012
           Head Length: 0.200000003
@@ -240,7 +240,7 @@ do
             X: 0
             Y: 0
             Z: 0
-          Pose Color: 255; 85; 255
+          Pose Color: $((${r_value[$counter]}+8)); ${g_value[$counter]}; ${b_value[$counter]}
           Pose Style: None
           Radius: 0.0299999993
           Shaft Diameter: 0.100000001
@@ -268,7 +268,7 @@ do
           Axes Length: 1
           Axes Radius: 0.100000001
           Class: rviz/Pose
-          Color: 255; 25; 0
+          Color: $((${r_value[$counter]} * 139)); $((${g_value[$counter]} * 139)); $((${b_value[$counter]} * 139))
           Enabled: true
           Head Length: 0.300000012
           Head Radius: 0.100000001
