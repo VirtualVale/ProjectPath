@@ -1,5 +1,9 @@
 #!/bin/bash
 echo "ready for creating the config"
+number=$1
+r_value=(0 0 139 0)
+g_value=(0 0 0 139)
+b_value=(0 139 0 0)
 echo "Panels:
   - Class: rviz/Displays
     Help Height: 78
@@ -8,7 +12,6 @@ echo "Panels:
       Expanded:
         - /TF1/Frames1
         - /TF1/Tree1
-        - /tb3_11/RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 843
   - Class: rviz/Selection
@@ -28,7 +31,7 @@ echo "Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: ""
 Toolbars:
   toolButtonStyle: 2
 Visualization Manager:
@@ -87,8 +90,12 @@ Visualization Manager:
       Topic: /map
       Unreliable: false
       Use Timestamp: false
-      Value: true
-    - Class: rviz/Group
+      Value: true" > /home/valo/catkin_ws/src/timeflow/path_planning_system/config/dynamic.rviz
+counter=1
+while [ $counter -le $number ]
+do
+  echo "${counter}"
+  echo "    - Class: rviz/Group
       Displays:
         - Class: rviz/Group
           Displays:
@@ -97,7 +104,7 @@ Visualization Manager:
               Color: 0; 0; 0
               Enabled: true
               Name: Polygon
-              Topic: /tb3_1/move_base/local_costmap/footprint
+              Topic: /tb3_${counter}/move_base/local_costmap/footprint
               Unreliable: false
               Value: true
             - Alpha: 0.699999988
@@ -106,7 +113,7 @@ Visualization Manager:
               Draw Behind: false
               Enabled: true
               Name: Costmap
-              Topic: /tb3_1/move_base/local_costmap/costmap
+              Topic: /tb3_${counter}/move_base/local_costmap/costmap
               Unreliable: false
               Use Timestamp: false
               Value: true
@@ -130,7 +137,7 @@ Visualization Manager:
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
               Shaft Length: 0.100000001
-              Topic: /tb3_1/move_base/DWAPlannerROS/local_plan
+              Topic: /tb3_${counter}/move_base/DWAPlannerROS/local_plan
               Unreliable: false
               Value: true
           Enabled: true
@@ -143,14 +150,14 @@ Visualization Manager:
               Draw Behind: true
               Enabled: true
               Name: Costmap
-              Topic: /tb3_1/move_base/global_costmap/costmap
+              Topic: /tb3_${counter}/move_base/global_costmap/costmap
               Unreliable: false
               Use Timestamp: false
               Value: true
             - Alpha: 1
               Buffer Length: 1
               Class: rviz/Path
-              Color: 255; 0; 0
+              Color: ${r_value[$counter]}; ${g_value[$counter]}; ${b_value[$counter]}
               Enabled: true
               Head Diameter: 0.300000012
               Head Length: 0.200000003
@@ -162,12 +169,12 @@ Visualization Manager:
                 X: 0
                 Y: 0
                 Z: 0
-              Pose Color: 255; 85; 255
+              Pose Color: ${r_value[$counter]}; ${g_value[$counter]}; ${b_value[$counter]}
               Pose Style: None
               Radius: 0.0299999993
               Shaft Diameter: 0.100000001
               Shaft Length: 0.100000001
-              Topic: /tb3_1/move_base/DWAPlannerROS/global_plan
+              Topic: /tb3_${counter}/move_base/DWAPlannerROS/global_plan
               Unreliable: false
               Value: true
           Enabled: true
@@ -185,7 +192,7 @@ Visualization Manager:
           Shaft Length: 0.230000004
           Shaft Radius: 0.00999999978
           Shape: Arrow (Flat)
-          Topic: /tb3_1/particlecloud
+          Topic: /tb3_${counter}/particlecloud
           Unreliable: false
           Value: true
         - Alpha: 1
@@ -213,7 +220,7 @@ Visualization Manager:
           Size (Pixels): 3
           Size (m): 0.0300000012
           Style: Flat Squares
-          Topic: /tb3_1/scan
+          Topic: /tb3_${counter}/scan
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
@@ -238,7 +245,7 @@ Visualization Manager:
           Radius: 0.0299999993
           Shaft Diameter: 0.100000001
           Shaft Length: 0.100000001
-          Topic: /tb3_1/move_base/NavfnROS/plan
+          Topic: /tb3_${counter}/move_base/NavfnROS/plan
           Unreliable: false
           Value: true
         - Alpha: 1
@@ -251,42 +258,9 @@ Visualization Manager:
             Expand Link Details: false
             Expand Tree: false
             Link Tree Style: Links in Alphabetic Order
-            base_footprint:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            base_link:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            base_scan:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            caster_back_link:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            imu_link:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-            wheel_left_link:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
-            wheel_right_link:
-              Alpha: 1
-              Show Axes: false
-              Show Trail: false
-              Value: true
           Name: RobotModel
-          Robot Description: /tb3_1/robot_description
-          TF Prefix: tb3_1
+          Robot Description: /tb3_${counter}/robot_description
+          TF Prefix: tb3_${counter}
           Update Interval: 0
           Value: true
           Visual Enabled: true
@@ -302,11 +276,13 @@ Visualization Manager:
           Shaft Length: 0.5
           Shaft Radius: 0.0500000007
           Shape: Arrow
-          Topic: /tb3_1/move_base/current_goal
+          Topic: /tb3_${counter}/move_base/current_goal
           Unreliable: false
           Value: true
       Enabled: true
-      Name: tb3_1" > /home/valo/catkin_ws/src/timeflow/path_planning_system/config/dynamic.rviz
+      Name: tb3_${counter}" >> /home/valo/catkin_ws/src/timeflow/path_planning_system/config/dynamic.rviz
+        ((counter++))
+done
 
 echo "  Enabled: true
   Global Options:
@@ -363,7 +339,8 @@ Window Geometry:
     collapsed: true
   Width: 1855
   X: 65
-  Y: 24" >> /home/valo/catkin_ws/src/timeflow/path_planning_system/config/dynamic.rviz
+  Y: 24
+" >> /home/valo/catkin_ws/src/timeflow/path_planning_system/config/dynamic.rviz
 
 echo "finished.
 dynamic rviz config ready"
