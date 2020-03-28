@@ -1,9 +1,12 @@
 #!/bin/bash
+#this script produces a rviz config file for a dynamic number of robots
+#TODO change the location of the config file to a dynamic path
 echo "ready for creating the config"
 number=$1
 r_value=(0 0 1 0 1 1 0 1 0)
 g_value=(0 0 0 1 1 0 1 1 0)
 b_value=(0 1 0 0 0 1 1 1 0)
+#static part
 echo "Panels:
   - Class: rviz/Displays
     Help Height: 78
@@ -91,6 +94,7 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: true" > /home/valo/catkin_ws/src/timeflow/path_planning_system/config/dynamic.rviz
+#loop to create the part for every resource
 counter=1
 while [ $counter -le $number ]
 do
@@ -284,6 +288,7 @@ do
         ((counter++))
 done
 
+#static part II
 echo "  Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -299,7 +304,7 @@ echo "  Enabled: true
     - Class: rviz/SetInitialPose
       Topic: /initialpose
     - Class: rviz/SetGoal
-      Topic: tb3_0/move_base_simple/goal
+      Topic: tb3_1/move_base_simple/goal
     - Class: rviz/Measure
   Value: true
   Views:
