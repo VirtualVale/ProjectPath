@@ -7,6 +7,8 @@ plugins:
     - {name: static_map,       type: "costmap_2d::StaticLayer"}
     - {name: obstacles,        type: "costmap_2d::VoxelLayer"}
     - {name: inflation_layer, type: 'costmap_2d::InflationLayer'}
+    - {name: simple_layer, type: 'simple_layer_namespace::SimpleLayer'}
+
 
 #set if you want the voxel map published
 publish_voxel_map: true
